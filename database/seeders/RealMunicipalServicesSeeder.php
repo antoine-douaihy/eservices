@@ -29,7 +29,7 @@ class RealMunicipalServicesSeeder extends Seeder
 
         // Already seeded AND already has its Arabic translation — nothing to do.
         if ($existing && !empty($existing->name_ar)) {
-            $this->command->info('Real municipal services already seeded — skipping.');
+            $this->command?->info('Real municipal services already seeded — skipping.');
             return;
         }
 
@@ -48,7 +48,7 @@ class RealMunicipalServicesSeeder extends Seeder
 
         $offices = Office::where('is_active', true)->get();
         if ($offices->isEmpty()) {
-            $this->command->warn('No active offices found — run MunicipalityOfficeServiceSeeder first.');
+            $this->command?->warn('No active offices found — run MunicipalityOfficeServiceSeeder first.');
             return;
         }
 
@@ -88,7 +88,7 @@ class RealMunicipalServicesSeeder extends Seeder
             }
         }
 
-        $this->command->info('Real municipal services seeded (with Arabic translations) across ' . $offices->count() . ' office(s), ' . count($services) . ' services each.');
+        $this->command?->info('Real municipal services seeded (with Arabic translations) across ' . $offices->count() . ' office(s), ' . count($services) . ' services each.');
     }
 
     /**
@@ -123,7 +123,7 @@ class RealMunicipalServicesSeeder extends Seeder
             }
         }
 
-        $this->command->info("Backfilled Arabic translations on {$updatedServices} service row(s) and {$updatedDocs} document row(s).");
+        $this->command?->info("Backfilled Arabic translations on {$updatedServices} service row(s) and {$updatedDocs} document row(s).");
     }
 
     /** The 7 real municipal services, in English and Arabic. */

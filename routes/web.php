@@ -368,9 +368,11 @@ Route::get('/fix-real-services-3p8w1z', function () {
     \App\Models\RequiredDocument::query()->delete();
     \App\Models\Service::query()->delete();
 
-    (new \Database\Seeders\MunicipalityOfficeServiceSeeder())->run();
-    (new \Database\Seeders\RealMunicipalServicesSeeder())->run();
+    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+    $output = \Illuminate\Support\Facades\Artisan::output();
 
     $count = \App\Models\Service::where('is_active', true)->count();
-    return "Reset done. Active services now: {$count}. Visit /debug-services-7h2n9q to see the full list.";
+
+    return '<pre>' . htmlspecialchars($output) . '</pre>'
+        . "<p>Active services now: {$count}. Visit /debug-services-7h2n9q for the full list.</p>";
 });

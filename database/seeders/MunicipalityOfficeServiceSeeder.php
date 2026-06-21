@@ -282,6 +282,6 @@ class MunicipalityOfficeServiceSeeder extends Seeder
             }
         }
 
-        $this->command->info('Municipalities, offices, and services seeded successfully.');
+        $this->command?->info('Municipalities, offices, and services seeded successfully.');
     }
 }
