@@ -339,3 +339,38 @@ Route::get('/run-seed-9f3k2m8x', function () {
     return '<pre>' . htmlspecialchars($output) . '</pre>'
         . '<p>Done. Services now in DB: ' . \App\Models\Service::count() . '</p>';
 });
+
+// Read-only: list every service row exactly as stored, so we can see
+// what's actually live without guessing.
+Route::get('/debug-services-7h2n9q', function () {
+    $rows = \App\Models\Service::with('office')->orderBy('id')->get();
+
+    $html = '<pre>';
+    foreach ($rows as $s) {
+        $html .= sprintf(
+            "#%-4d active=%-5s group=%-8s office=%-30s %s\n",
+            $s->id,
+            $s->is_active ? 'yes' : 'no',
+            $s->group_uuid ? substr($s->group_uuid, 0, 8) : '-',
+            $s->office->name ?? '—',
+            $s->name
+        );
+    }
+    $html .= '</pre><p>Total rows: ' . $rows->count() . ' | Active: ' . $rows->where('is_active', true)->count() . '</p>';
+
+    return $html;
+});
+
+// Forcefully wipes services/required_documents and re-seeds the real
+// 7 municipal services fresh — use if the catalog shows the wrong
+// (placeholder) services instead of the real ones.
+Route::get('/fix-real-services-3p8w1z', function () {
+    \App\Models\RequiredDocument::query()->delete();
+    \App\Models\Service::query()->delete();
+
+    (new \Database\Seeders\MunicipalityOfficeServiceSeeder())->run();
+    (new \Database\Seeders\RealMunicipalServicesSeeder())->run();
+
+    $count = \App\Models\Service::where('is_active', true)->count();
+    return "Reset done. Active services now: {$count}. Visit /debug-services-7h2n9q to see the full list.";
+});
