@@ -371,4 +371,3 @@ class CitizenRequestController extends Controller
         return $pdf->download($filename);
     }
 }
-                                                                                             

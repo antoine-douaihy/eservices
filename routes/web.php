@@ -323,6 +323,25 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
 use App\Http\Controllers\Citizen\ChatbotController;
 Route::post('/chat', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
 
+// Read-only: scan every PHP file under app/ for embedded NUL bytes
+// (the corruption pattern that just hit CitizenRequestController.php),
+// so we can find any other affected files before they 500 in prod.
+Route::get('/scan-null-bytes-2k7v4p', function () {
+    $bad = [];
+    $dir = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(app_path()));
+    foreach ($dir as $file) {
+        if ($file->isFile() && $file->getExtension() === 'php') {
+            $contents = file_get_contents($file->getPathname());
+            if (str_contains($contents, "\0")) {
+                $bad[] = str_replace(base_path(), '', $file->getPathname());
+            }
+        }
+    }
+    return empty($bad)
+        ? 'Clean — no NUL bytes found in app/.'
+        : '<pre>' . htmlspecialchars(implode("\n", $bad)) . '</pre>';
+});
+
 // ==========================================
 // TEMPORARY ONE-TIME DB SEED (no Render Shell access on free tier)
 // Visit once after deploy, then this file should have this route removed.
