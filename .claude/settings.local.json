@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -l app/Http/Controllers/Admin/DashboardController.php)",
+      "Bash(php -l app/Http/Controllers/Admin/UserController.php)",
+      "PowerShell(php artisan config:clear)",
+      "PowerShell(php artisan cache:clear)",
+      "PowerShell(php artisan view:clear)",
+      "PowerShell(php artisan route:clear)",
+      "PowerShell(php artisan route:list 2>&1)",
+      "PowerShell(head -100)",
+      "PowerShell(php artisan ide-helper:generate 2>&1)",
+      "PowerShell(Get-Content \".env\" -Encoding Byte -TotalCount 3 | ForEach-Object { $_.ToString\\(\"X2\"\\) })",
+      "PowerShell(php artisan about 2>&1)",
+      "PowerShell($content = [System.IO.File]::ReadAllBytes\\(\".env\"\\); $bom = [byte[]]\\(0xEF, 0xBB, 0xBF\\); if \\($content[0] -eq 0xEF -and $content[1] -eq 0xBB -and $content[2] -eq 0xBF\\) { $stripped = $content[3..\\($content.Length-1\\)]; [System.IO.File]::WriteAllBytes\\(\".env\", $stripped\\); Write-Output \"BOM removed from .env\" } else { Write-Output \"No BOM found\" })",
+      "PowerShell(php artisan storage:link 2>&1)",
+      "PowerShell(php artisan view:clear 2>&1)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\Software-Development\" -Directory)",
+      "Bash(Select-Object Name)"
+    ]
+  }
+}

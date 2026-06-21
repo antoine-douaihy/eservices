@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(findstr /i \"use App\" \"app\\\\Http\\\\Controllers\\\\Auth\\\\LoginController.php\")",
+      "Bash(findstr \"use\")",
+      "PowerShell($build = Get-Item \"c:\\\\xampp\\\\htdocs\\\\Software-Development\\\\public\\\\build\" -ErrorAction SilentlyContinue; if \\($build\\) { $build.LastWriteTime } else { \"No build folder\" }; $echo = Get-Item \"c:\\\\xampp\\\\htdocs\\\\Software-Development\\\\resources\\\\js\\\\echo.js\"; $echo.LastWriteTime)",
+      "PowerShell(head -10)",
+      "PowerShell($log = Get-Content \"c:\\\\xampp\\\\htdocs\\\\Software-Development\\\\storage\\\\logs\\\\laravel.log\" -Raw; $entries = $log -split '\\\\[\\\\d{4}-\\\\d{2}-\\\\d{2}'; $recent = $entries | Select-Object -Last 5; $recent | ForEach-Object { $_.Substring\\(0, [Math]::Min\\(300, $_.Length\\)\\) })",
+      "Bash(php artisan *)",
+      "Bash(python -c \"import sys,json; p=json.load\\(sys.stdin\\); print\\('laravel-echo:', p.get\\('dependencies',{}\\).get\\('laravel-echo','NOT FOUND'\\)\\); print\\('pusher-js:', p.get\\('dependencies',{}\\).get\\('pusher-js','NOT FOUND'\\)\\)\")",
+      "Bash(findstr /i \"pusher echo\")",
+      "PowerShell(ls \"c:\\\\xampp\\\\htdocs\\\\Software-Development\\\\node_modules\" | Where-Object { $_.Name -match \"pusher|echo\" } | Select-Object Name)",
+      "Bash(npm install *)",
+      "PowerShell(\\(ls \"c:\\\\xampp\\\\htdocs\\\\Software-Development\\\\node_modules\"\\).Count)",
+      "PowerShell(Get-ChildItem \"c:\\\\xampp\\\\htdocs\\\\Software-Development\\\\node_modules\" -Name | Where-Object { $_ -match \"pusher|echo|laravel\" })",
+      "Read(//c/xampp/apache/conf//**)",
+      "Bash(curl -sI \"http://localhost/Software-Development/public/\")",
+      "Bash(xargs grep *)"
+    ]
+  }
+}
