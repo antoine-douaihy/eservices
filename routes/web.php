@@ -322,3 +322,20 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
 });
 use App\Http\Controllers\Citizen\ChatbotController;
 Route::post('/chat', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
+
+// ==========================================
+// TEMPORARY ONE-TIME DB SEED (no Render Shell access on free tier)
+// Visit once after deploy, then this file should have this route removed.
+// Self-locking: refuses to run again once services exist.
+// ==========================================
+Route::get('/run-seed-9f3k2m8x', function () {
+    if (\App\Models\Service::count() > 0) {
+        return 'Already seeded — services table is not empty. Nothing to do.';
+    }
+
+    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+    $output = \Illuminate\Support\Facades\Artisan::output();
+
+    return '<pre>' . htmlspecialchars($output) . '</pre>'
+        . '<p>Done. Services now in DB: ' . \App\Models\Service::count() . '</p>';
+});
