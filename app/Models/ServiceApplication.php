@@ -83,4 +83,8 @@ class ServiceApplication extends Model
     {
         $year  = date('Y');
         $count = static::whereYear('created_at', $year)->count() + 1;
+
+        return 'SA-' . $year . '-' . str_pad((string) $count, 5, '0', STR_PAD_LEFT);
+    }
+}
       

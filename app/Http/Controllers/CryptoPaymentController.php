@@ -123,4 +123,12 @@ class CryptoPaymentController extends Controller
             $data = $response->json();
 
             return [
-           
+                'BTC' => $data['bitcoin']['usd'] ?? 0,
+                'ETH' => $data['ethereum']['usd'] ?? 0,
+            ];
+        } catch (\Exception $e) {
+            // Fallback prices if the API is unreachable, so payment isn't blocked
+            return ['BTC' => 60000, 'ETH' => 3000];
+        }
+    }
+}

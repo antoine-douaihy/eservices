@@ -296,4 +296,72 @@
             {{-- ACTIONS --}}
             <div class="d-flex gap-3 justify-content-end">
                 <a href="{{ route('staff.services.index') }}" class="btn-ghost">
-           
+                    <i class="bi bi-x-lg"></i> Cancel
+                </a>
+                <button type="submit" class="btn-gold">
+                    <i class="bi bi-floppy-fill"></i> Create Service
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+let docIndex = 1;
+
+function addDocumentRow() {
+    const container = document.getElementById('documentsContainer');
+    document.getElementById('noDocsMsg').style.display = 'none';
+
+    const row = document.createElement('div');
+    row.className = 'doc-row';
+    row.id = 'doc-row-' + docIndex;
+    row.innerHTML = `
+        <i class="bi bi-grip-vertical doc-drag-handle"></i>
+        <div style="flex:1;">
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label class="form-label-custom">Document Name (English)</label>
+                    <input type="text" name="documents[${docIndex}][name]" class="form-control-custom" placeholder="e.g. National ID, Birth Certificate">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-custom">Document Name (Arabic)</label>
+                    <input type="text" name="documents[${docIndex}][name_ar]" dir="rtl" class="form-control-custom" placeholder="مثال: هوية شخصية، شهادة ميلاد">
+                </div>
+                <div class="col-md-9">
+                    <label class="form-label-custom">Notes / Instructions</label>
+                    <input type="text" name="documents[${docIndex}][notes]" class="form-control-custom" placeholder="e.g. Original + 2 copies">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label-custom">Required?</label>
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="documents[${docIndex}][is_mandatory]" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span style="font-size:0.75rem;color:var(--muted);">Mandatory</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="doc-remove" onclick="removeDoc(${docIndex})">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    `;
+    container.appendChild(row);
+    docIndex++;
+}
+
+function removeDoc(id) {
+    const row = document.getElementById('doc-row-' + id);
+    if (row) row.remove();
+    const container = document.getElementById('documentsContainer');
+    if (container.children.length === 0) {
+        document.getElementById('noDocsMsg').style.display = 'block';
+    }
+}
+</script>
+@endpush

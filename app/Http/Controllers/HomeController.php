@@ -51,4 +51,8 @@ class HomeController extends Controller
         return redirect()->route('citizen.home');
     }
 
- 
+    public function howItWorks()
+    {
+        return view('citizen.how-it-works');
+    }
+}

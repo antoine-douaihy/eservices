@@ -64,4 +64,17 @@ return [
         'omt_account'  => env('OMT_ACCOUNT', 'OMT-ACCOUNT-PLACEHOLDER'),
     ],
 
-   
+    'twilio' => [
+        'sid'           => env('TWILIO_SID'),
+        'auth_token'    => env('TWILIO_AUTH_TOKEN'),
+        // Twilio Sandbox default — replace with your own approved
+        // WhatsApp sender once you move off the sandbox.
+        'whatsapp_from' => env('TWILIO_WHATSAPP_FROM', '14155238886'),
+        // Approved Content Template SID (HX...). Required for
+        // business-initiated messages (e.g. "your service is ready")
+        // outside the Sandbox. Leave blank to send plain Body text
+        // (Sandbox / 24h-session mode only).
+        'content_sid'   => env('TWILIO_CONTENT_SID'),
+    ],
+
+];

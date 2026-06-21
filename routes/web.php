@@ -321,4 +321,4 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
     Route::resource('services', ServiceController::class)->except(['show']);
 });
 use App\Http\Controllers\Citizen\ChatbotController;
-R
+Route::post('/chat', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');

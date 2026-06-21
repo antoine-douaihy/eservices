@@ -162,4 +162,78 @@ class ServiceController extends Controller
             'currency'        => 'required|string|max:10',
             'processing_days' => 'required|integer|min:1',
             'office_id'       => 'required|exists:offices,id',
-            'category_
+            'category_id'     => 'nullable|exists:service_categories,id',
+            'is_active'       => 'boolean',
+
+            // Documents array
+            'documents'               => 'nullable|array',
+            'documents.*.name'        => 'required_with:documents|string|max:255',
+            'documents.*.name_ar'     => 'nullable|string|max:255',
+            'documents.*.notes'       => 'nullable|string|max:500',
+            'documents.*.is_mandatory' => 'nullable|in:0,1,true,false,on',
+        ]);
+
+        // Propagate the shared fields to every sibling service sharing this
+        // group_uuid, so every office's copy stays consistent. office_id is
+        // intentionally excluded from the shared update — each sibling keeps
+        // its own.
+        $siblingIds = $service->group_uuid
+            ? Service::where('group_uuid', $service->group_uuid)->pluck('id')
+            : collect([$service->id]);
+
+        DB::transaction(function () use ($validated, $request, $siblingIds) {
+            $sharedFields = [
+                'name'            => $validated['name'],
+                'name_ar'         => $validated['name_ar'] ?? null,
+                'description'     => $validated['description'] ?? null,
+                'description_ar'  => $validated['description_ar'] ?? null,
+                'price'           => $validated['price'],
+                'currency'        => $validated['currency'],
+                'processing_days' => $validated['processing_days'],
+                'category_id'     => $validated['category_id'] ?? null,
+                'is_active'       => $request->boolean('is_active', true),
+            ];
+
+            Service::whereIn('id', $siblingIds)->update($sharedFields);
+
+            // Re-sync required documents identically across every sibling so
+            // all offices show the same requirements for this service.
+            RequiredDocument::whereIn('service_id', $siblingIds)->delete();
+
+            if (!empty($validated['documents'])) {
+                foreach (Service::whereIn('id', $siblingIds)->get() as $sibling) {
+                    foreach ($validated['documents'] as $index => $doc) {
+                        if (!empty($doc['name'])) {
+                            $sibling->requiredDocuments()->create([
+                                'name'         => $doc['name'],
+                                'name_ar'      => $doc['name_ar'] ?? null,
+                                'notes'        => $doc['notes'] ?? null,
+                                'is_mandatory' => !empty($doc['is_mandatory']),
+                                'sort_order'   => $index,
+                            ]);
+                        }
+                    }
+                }
+            }
+        });
+
+        return redirect()->route('staff.services.index')
+                         ->with('success', "Service \"{$validated['name']}\" updated across all offices.");
+    }
+
+    /**
+     * Delete a service and every sibling copy sharing its group_uuid.
+     */
+    public function destroy(Service $service)
+    {
+        $name = $service->name;
+        $siblingIds = $service->group_uuid
+            ? Service::where('group_uuid', $service->group_uuid)->pluck('id')
+            : collect([$service->id]);
+
+        Service::whereIn('id', $siblingIds)->delete();
+
+        return redirect()->route('staff.services.index')
+                         ->with('success', "Service \"{$name}\" deleted from all offices.");
+    }
+}

@@ -74,4 +74,32 @@ class WhatsAppService
         try {
             $response = Http::asForm()
                 ->withBasicAuth($sid, $token)
-                ->post("https://api.tw
+                ->post("https://api.twilio.com/2010-04-01/Accounts/{$sid}/Messages.json", $payload);
+
+            if ($response->failed()) {
+                Log::warning('WhatsApp send failed', ['to' => $normalized, 'response' => $response->body()]);
+                return false;
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('WhatsApp send exception: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Normalize a Lebanese phone number (any common format accepted by
+     * App\Rules\LebanesePhoneNumber) into E.164 without the leading "+".
+     */
+    public static function toE164(string $phone): ?string
+    {
+        $normalized = preg_replace('/[\s\-\(\)]+/', '', $phone);
+
+        if (preg_match('/^(?:\+?961|00961)?0?(3\d{6}|7[01689]\d{6}|81\d{6}|[1456789]\d{6,7})$/', $normalized, $m)) {
+            return '961' . $m[1];
+        }
+
+        return null;
+    }
+}

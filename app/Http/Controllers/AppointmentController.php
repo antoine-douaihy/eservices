@@ -119,4 +119,11 @@ class AppointmentController extends Controller
         return Redirect::back()->with('success', 'Appointment confirmed.');
     }
 
-    // Citizen: cancel a
+    // Citizen: cancel appointment
+    public function citizenCancel(Appointment $appointment)
+    {
+        if ($appointment->user_id !== Auth::id()) abort(403);
+        $appointment->update(['status' => 'cancelled']);
+        return Redirect::back()->with('success', 'Appointment cancelled.');
+    }
+}

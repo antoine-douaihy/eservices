@@ -59,4 +59,48 @@ class Service extends Model
         if (empty($this->group_uuid)) {
             return static::query()->whereRaw('0 = 1');
         }
-        return static::where('group_uuid', $this-
+        return static::where('group_uuid', $this->group_uuid)->where('id', '!=', $this->id);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(ServiceCategory::class, 'category_id');
+    }
+
+    public function requiredDocuments()
+    {
+        return $this->hasMany(RequiredDocument::class)->orderBy('sort_order');
+    }
+
+    // Formatted price helper
+    public function formattedPrice(): string
+    {
+        if ($this->price == 0) {
+            return 'Free';
+        }
+        return $this->currency . ' ' . number_format($this->price, 2);
+    }
+
+    /**
+     * Locale-aware display name. Falls back to the canonical English
+     * `name` if no Arabic translation exists. Use this (not `name`)
+     * anywhere a service title is shown to the user — `name` itself
+     * stays English-only since it's used in cross-office matching
+     * queries (e.g. finding the nearest office offering "this" service).
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        if (app()->getLocale() === 'ar' && !empty($this->name_ar)) {
+            return $this->name_ar;
+        }
+        return $this->name;
+    }
+
+    public function getDisplayDescriptionAttribute(): ?string
+    {
+        if (app()->getLocale() === 'ar' && !empty($this->description_ar)) {
+            return $this->description_ar;
+        }
+        return $this->description;
+    }
+}

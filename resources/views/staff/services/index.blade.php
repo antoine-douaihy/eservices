@@ -255,4 +255,7 @@ function submitDelete() {
     if (pendingId) document.getElementById('del-' + pendingId).submit();
 }
 document.getElementById('deleteModal').addEventListener('click', function(e) {
-    if (e.ta
+    if (e.target === this) closeModal();
+});
+</script>
+@endpush

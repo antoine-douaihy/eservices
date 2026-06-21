@@ -324,4 +324,60 @@ function addDocumentRow() {
             <div class="row g-2">
                 <div class="col-md-6">
                     <label class="form-label-custom">Document Name (English)</label>
-                    
+                    <input type="text" name="documents[${docIndex}][name]" class="form-control-custom" placeholder="e.g. National ID">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-custom">Document Name (Arabic)</label>
+                    <input type="text" name="documents[${docIndex}][name_ar]" dir="rtl" class="form-control-custom" placeholder="مثال: هوية شخصية">
+                </div>
+                <div class="col-md-9">
+                    <label class="form-label-custom">Notes / Instructions</label>
+                    <input type="text" name="documents[${docIndex}][notes]" class="form-control-custom" placeholder="e.g. Original + 2 copies">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label-custom">Required?</label>
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="documents[${docIndex}][is_mandatory]" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span style="font-size:0.75rem;color:var(--muted);">Mandatory</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="doc-remove" onclick="removeDoc(${docIndex})">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    `;
+    container.appendChild(row);
+    docIndex++;
+}
+
+function removeDoc(id) {
+    const row = document.getElementById('doc-row-' + id);
+    if (row) row.remove();
+    const container = document.getElementById('documentsContainer');
+    if (container.children.length === 0) {
+        document.getElementById('noDocsMsg').style.display = 'block';
+    }
+}
+
+let pendingId = null;
+function confirmDelete(id, name) {
+    pendingId = id;
+    document.getElementById('delName').textContent = name;
+    document.getElementById('deleteModal').style.display = 'flex';
+}
+function closeModal() {
+    pendingId = null;
+    document.getElementById('deleteModal').style.display = 'none';
+}
+function submitDelete() {
+    if (pendingId) document.getElementById('delete-form-' + pendingId).submit();
+}
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+</script>
+@endpush

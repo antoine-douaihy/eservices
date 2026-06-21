@@ -34,4 +34,26 @@ class LoginController extends Controller
 
         if ($user->two_factor_enabled && $user->two_factor_secret) {
             Auth::logout();
+            session(['2fa:user_id' => $user->id]);
+            return redirect()->route('2fa.challenge');
+        }
+
+        if ($user->two_factor_enabled) {
+            Auth::logout();
+            session(['2fa:user_id' => $user->id]);
+            TwoFactorController::sendEmailCode($user);
+            return redirect()->route('2fa.challenge');
+        }
+
+        return redirect()->intended($this->redirectTo);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login');
+    }
+}
           

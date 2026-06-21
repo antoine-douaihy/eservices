@@ -24,4 +24,15 @@ class RequiredDocument extends Model
 
     public function service()
     {
-        return $this->belongsTo(Servic
+        return $this->belongsTo(Service::class);
+    }
+
+    /** Locale-aware display name, falls back to English. */
+    public function getDisplayNameAttribute(): string
+    {
+        if (app()->getLocale() === 'ar' && !empty($this->name_ar)) {
+            return $this->name_ar;
+        }
+        return $this->name;
+    }
+}

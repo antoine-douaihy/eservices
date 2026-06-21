@@ -87,4 +87,19 @@ class AdminController extends Controller
                ]);
 
                // 3. Optional: Only update password if they typed a new one
-        
+               if ($request->filled('password')) {
+                   $request->validate(['password' => 'string|min:8']);
+                   $staff->update(['password' => Hash::make($request->password)]);
+               }
+
+               return redirect()->route('admin.dashboard')->with('success', 'Staff member updated successfully.');
+           }
+
+           public function destroy($id)
+           {
+               $staff = User::findOrFail($id);
+               $staff->delete();
+
+               return redirect()->route('admin.dashboard')->with('success', 'Staff member removed successfully.');
+           }
+}

@@ -268,4 +268,37 @@ class ServiceApplicationController extends Controller
             ->whereHas('services', fn($q) => $q->where('name', $serviceName)->where('is_active', true))
             ->get();
 
+        if ($offices->isEmpty()) {
+            return null;
+        }
+
+        $nearest = null;
+        $minDistance = INF;
+
+        foreach ($offices as $office) {
+            $distance = $this->haversineDistance($lat, $lng, (float) $office->latitude, (float) $office->longitude);
+            if ($distance < $minDistance) {
+                $minDistance = $distance;
+                $nearest = $office;
+            }
+        }
+
+        return $nearest;
+    }
+
+    private function haversineDistance(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $earthRadiusKm = 6371;
+
+        $latDiff = deg2rad($lat2 - $lat1);
+        $lngDiff = deg2rad($lng2 - $lng1);
+
+        $a = sin($latDiff / 2) ** 2
+            + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($lngDiff / 2) ** 2;
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earthRadiusKm * $c;
+    }
+}
  

@@ -56,4 +56,36 @@ class AppointmentConfirmed extends Notification
 
         if ($this->status === 'confirmed') {
             $message .= "\n\nPlease arrive on time.";
-        } el
+        } elseif ($this->status === 'cancelled') {
+            $message .= "\n\nIf this was a mistake, please contact the office to reschedule.";
+        }
+
+        return $message;
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'title' => "Appointment {$this->statusLabel()}",
+            'body'  => "{$this->appointment->title} — {$this->appointment->scheduled_at->format('d M Y \a\t H:i')}",
+            'url'   => route('citizen.appointments.index'),
+            'icon'  => match ($this->status) {
+                'completed' => 'bi-check2-all',
+                'cancelled' => 'bi-x-circle-fill',
+                default     => 'bi-calendar-check-fill',
+            },
+        ];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject("Appointment {$this->statusLabel()} — {$this->appointment->title}")
+            ->greeting("Hello, {$notifiable->first_name}!")
+            ->line("Your appointment has been **{$this->statusLabel()}**.")
+            ->line("**Title:** {$this->appointment->title}")
+            ->line("**Date & Time:** {$this->appointment->scheduled_at->format('d M Y \a\t H:i')}")
+            ->line("**Office:** {$this->appointment->office->name}")
+            ->action('View My Appointments', route('citizen.appointments.index'));
+    }
+}

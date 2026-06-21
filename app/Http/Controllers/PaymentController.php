@@ -98,4 +98,9 @@ class PaymentController extends Controller
 
         try {
             $citizenRequest->user->notify(new \App\Notifications\PaymentConfirmed($citizenRequest->fresh(), 'stripe'));
-        } catch (\Exce
+        } catch (\Exception $e) {}
+
+        return redirect()->route('citizen.my-requests')
+            ->with('success', 'Payment successful! Your request is now under review.');
+    }
+}

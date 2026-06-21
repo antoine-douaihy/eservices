@@ -87,4 +87,16 @@ class CitizenRequest extends Model
 
     public function appointments()
     {
-        return $this->hasMany(Appointment::class
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function logHistory(string $toStatus, ?int $userId = null, ?string $note = null): void
+    {
+        $this->histories()->create([
+            'user_id'     => $userId,
+            'from_status' => $this->getOriginal('status') ?? $this->status,
+            'to_status'   => $toStatus,
+            'note'        => $note,
+        ]);
+    }
+}

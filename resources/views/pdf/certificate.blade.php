@@ -250,4 +250,11 @@
                     VERIFICATION CODE: CERT-{{ strtoupper(substr(md5($request->id . $request->approved_at), 0, 16)) }}
                     &nbsp;&nbsp;|&nbsp;&nbsp;
                     e-services-platform-production.up.railway.app
-                </d
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -72,4 +72,49 @@ class RequestStatusChanged extends Notification
     {
         return match($this->newStatus) {
             'approved'           => 'Your Service Is Ready',
-            'rejected'       
+            'rejected'           => 'Declined',
+            'in_review'          => 'Under Review',
+            'pending_payment'    => 'Awaiting Payment',
+            'missing_documents'  => 'Missing Information',
+            default              => ucfirst(str_replace('_', ' ', $this->newStatus)),
+        };
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'title' => "Request #{$this->citizenRequest->id} — " . $this->statusLabel(),
+            'body'  => $this->newStatus === 'approved'
+                ? "Your application for {$this->citizenRequest->service->name} has been approved!"
+                : "Your request for {$this->citizenRequest->service->name} is now: " . $this->statusLabel(),
+            'url'   => route('citizen.my-requests'),
+            'icon'  => match($this->newStatus) {
+                'approved' => 'bi-check-circle-fill',
+                'rejected' => 'bi-x-circle-fill',
+                default    => 'bi-info-circle-fill',
+            },
+        ];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $mail = (new MailMessage)
+            ->subject("Request #{$this->citizenRequest->id} — " . $this->statusLabel())
+            ->greeting("Hello, {$notifiable->first_name}!")
+            ->line("Your request for **{$this->citizenRequest->service->name}** is now: **{$this->statusLabel()}**.");
+
+        if ($this->note) {
+            $mail->line("**Note:** {$this->note}");
+        }
+
+        if ($this->newStatus === 'approved' && $this->citizenRequest->certificate_path) {
+            $mail->action('Download Certificate', route('requests.certificate', $this->citizenRequest));
+        } elseif ($this->newStatus === 'pending_payment') {
+            $mail->action('Complete Payment', route('citizen.payment.select', $this->citizenRequest));
+        } else {
+            $mail->action('View My Requests', route('citizen.my-requests'));
+        }
+
+        return $mail->line('Thank you for using our E-Services platform.');
+    }
+}

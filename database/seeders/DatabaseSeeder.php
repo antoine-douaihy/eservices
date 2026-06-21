@@ -37,4 +37,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             MunicipalityOfficeServiceSeeder::class,
             DashboardSeeder::class,
-            RealMuni
+            RealMunicipalServicesSeeder::class,
+        ]);
+    }
+}
