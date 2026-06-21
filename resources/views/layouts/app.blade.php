@@ -689,4 +689,104 @@
         const opening = !sidebar.classList.contains('open');
         sidebar.classList.toggle('open', opening);
         overlay.classList.toggle('show', opening);
-        document.body.style.ov
+        document.body.style.overflow = opening ? 'hidden' : '';
+    };
+
+    // Close sidebar automatically if the viewport grows back to desktop size
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 768) {
+            const sidebar = document.querySelector('.app-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar?.classList.remove('open');
+            overlay?.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    });
+
+    window.toggleNotif = function (e) {
+        e.stopPropagation();
+        panelOpen = !panelOpen;
+        document.getElementById('notif-panel').style.display = panelOpen ? 'block' : 'none';
+        if (panelOpen && !loaded) fetchNotifications();
+    };
+
+    function fetchNotifications() {
+        loaded = true;
+        fetch('/notifications')
+            .then(r => r.json())
+            .then(data => {
+                updateBadge(data.unread);
+                renderItems(data.notifications);
+            })
+            .catch(() => { loaded = false; });
+    }
+
+    function renderItems(items) {
+        const el = document.getElementById('notif-items');
+        if (!items.length) {
+            el.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+            return;
+        }
+        el.innerHTML = items.map(n => `
+            <div class="notif-item ${n.read ? '' : 'unread'}"
+                 onclick="readOne('${n.id}','${(n.data.url || '').replace(/'/g,"\\'")}')">
+                <div class="notif-icon"><i class="bi ${n.data.icon || 'bi-bell-fill'}"></i></div>
+                <div style="flex:1;min-width:0;">
+                    <div class="notif-title">${n.data.title || ''}</div>
+                    <div class="notif-body">${n.data.body || ''}</div>
+                    <div class="notif-time">${n.time}</div>
+                </div>
+            </div>`).join('');
+    }
+
+    function updateBadge(count) {
+        const b = document.getElementById('notif-badge');
+        if (!b) return;
+        if (count > 0) { b.textContent = count > 99 ? '99+' : count; b.classList.remove('d-none'); }
+        else { b.classList.add('d-none'); }
+    }
+
+    window.readOne = function (id, url) {
+        fetch(`/notifications/${id}/read`, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF(), 'Content-Type': 'application/json' }
+        }).then(() => { loaded = false; fetchNotifications(); if (url) window.location.href = url; });
+    };
+
+    window.markAllRead = function () {
+        fetch('/notifications/read-all', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF(), 'Content-Type': 'application/json' }
+        }).then(() => { loaded = false; fetchNotifications(); });
+    };
+
+    // Close on outside click
+    document.addEventListener('click', function (e) {
+        if (!document.getElementById('notif-wrapper')?.contains(e.target)) {
+            panelOpen = false;
+            const p = document.getElementById('notif-panel');
+            if (p) p.style.display = 'none';
+        }
+    });
+
+    // Load badge count on page load + poll every 60s
+    function pollCount() {
+        fetch('/notifications')
+            .then(r => r.json())
+            .then(data => {
+                updateBadge(data.unread);
+                if (panelOpen) renderItems(data.notifications);
+            })
+            .catch(() => {});
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        pollCount();
+        setInterval(pollCount, 60000);
+    });
+})();
+</script>
+@endauth
+<x-chatbot />
+</body>
+</html>

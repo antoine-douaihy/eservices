@@ -183,4 +183,7 @@ function quickApply() {
         setTimeout(() => select.style.borderColor = '', 2000);
         return;
     }
-    wind
+    window.location.href = url;
+}
+</script>
+@endpush

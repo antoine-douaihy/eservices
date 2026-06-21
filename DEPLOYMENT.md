@@ -27,8 +27,9 @@ You'll need: Access Key ID, Secret Access Key, bucket name, endpoint URL, public
 2. Render should detect the `Dockerfile` automatically (Environment: **Docker**). Region: pick whichever is closest to you.
 3. Plan: **Free**.
 4. Before first deploy, add a **Secret File** (Render dashboard → your service → **Environment** → **Secret Files**):
-   - Filename: `/app/storage/aiven-ca.pem`
+   - Filename: `aiven-ca.pem` (just the bare filename — Render rejects full paths here)
    - Contents: paste the Aiven CA certificate you downloaded in step 2.
+   - Render automatically makes this available at runtime as `/etc/secrets/aiven-ca.pem` — that's the path used in `MYSQL_ATTR_SSL_CA` below.
 5. Add these **Environment Variables**:
 
    | Key | Value |
@@ -45,7 +46,7 @@ You'll need: Access Key ID, Secret Access Key, bucket name, endpoint URL, public
    | `DB_DATABASE` | *(from Aiven)* |
    | `DB_USERNAME` | *(from Aiven)* |
    | `DB_PASSWORD` | *(from Aiven)* |
-   | `MYSQL_ATTR_SSL_CA` | `/app/storage/aiven-ca.pem` |
+   | `MYSQL_ATTR_SSL_CA` | `/etc/secrets/aiven-ca.pem` |
    | `SESSION_DRIVER` | `database` |
    | `CACHE_STORE` | `database` |
    | `QUEUE_CONNECTION` | `database` |

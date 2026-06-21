@@ -202,4 +202,8 @@
 function switchTab(id, btn) {
     document.querySelectorAll('.profile-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
- 
+    document.getElementById('panel-' + id).classList.add('active');
+    btn.classList.add('active');
+}
+</script>
+@endpush

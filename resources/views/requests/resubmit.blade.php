@@ -44,6 +44,13 @@
     </div>
 @endif
 
+@if($offices->isEmpty())
+    <div class="app-card" style="text-align:center;padding:3rem 2rem;">
+        <i class="bi bi-building-slash" style="font-size:2.5rem;color:var(--muted);opacity:0.4;display:block;margin-bottom:1rem;"></i>
+        <p style="color:var(--muted);">{{ app()->getLocale() === 'ar' ? 'لا توجد دوائر متوفرة بعد. يرجى المحاولة لاحقاً.' : 'No offices are available yet. Please check back later.' }}</p>
+    </div>
+@else
+
 <div class="row justify-content-center">
 <div class="col-lg-7">
     <div class="app-card">
@@ -53,10 +60,10 @@
             <div class="mb-4">
                 <label class="form-label-custom">{{ app()->getLocale() === 'ar' ? 'اختر الدائرة' : 'Select Office' }} <span style="color:#dc2626;">*</span></label>
                 <select name="office_id" id="office_id" class="form-select-custom" required>
-                    <option value="" disabled>{{ app()->getLocale() === 'ar' ? '— اختر دائرة —' : '— Choose an office —' }}</option>
+                    <option value="" disabled selected>{{ app()->getLocale() === 'ar' ? '— اختر دائرة —' : '— Choose an office —' }}</option>
                     @foreach($offices as $office)
                         <option value="{{ $office->id }}"
-                            {{ (old('office_id', $citizenRequest->office_id)) == $office->id ? 'selected' : '' }}>
+                            {{ old('office_id', $citizenRequest->office_id) == $office->id ? 'selected' : '' }}>
                             {{ $office->name }}@if($office->city) — {{ $office->city }}@endif
                         </option>
                     @endforeach
@@ -66,13 +73,13 @@
             <div class="mb-4">
                 <label class="form-label-custom">{{ app()->getLocale() === 'ar' ? 'اختر الخدمة' : 'Select Service' }} <span style="color:#dc2626;">*</span></label>
                 <select name="service_id" id="service_id" class="form-select-custom" required>
-                    <option value="" disabled>{{ app()->getLocale() === 'ar' ? '— اختر خدمة —' : '— Choose a service —' }}</option>
+                    <option value="" disabled selected>{{ app()->getLocale() === 'ar' ? '— اختر خدمة —' : '— Choose a service —' }}</option>
                     @foreach($services as $service)
                         <option value="{{ $service->id }}"
                                 data-office="{{ $service->office_id }}"
                                 data-price="{{ $service->price }}"
                                 data-docs="{{ $service->required_documents }}"
-                                {{ (old('service_id', $citizenRequest->service_id)) == $service->id ? 'selected' : '' }}>
+                                {{ old('service_id', $citizenRequest->service_id) == $service->id ? 'selected' : '' }}>
                             {{ $service->display_name }} — {{ $service->price > 0 ? '$'.number_format($service->price,2) : __('pages.free') }}
                         </option>
                     @endforeach
@@ -89,16 +96,16 @@
             </div>
 
             {{-- Document upload --}}
-            <div id="docs-upload-section" style="margin-bottom:1.25rem;">
+            <div id="docs-upload-section" style="display:none;margin-bottom:1.25rem;">
                 <label class="form-label-custom">
-                    {{ app()->getLocale() === 'ar' ? 'تحميل المستندات' : 'Upload Documents' }}
-                    <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted);">{{ app()->getLocale() === 'ar' ? '(استبدل أو أضف ملفات جديدة)' : '(replace or add new files)' }}</span>
+                    {{ app()->getLocale() === 'ar' ? 'تحميل المستندات المطلوبة' : 'Upload Required Documents' }} <span style="color:#dc2626;">*</span>
+                    <span id="docs-upload-hint" style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted);"></span>
                 </label>
                 <input type="file" name="documents[]" id="documents"
                        multiple accept=".jpg,.jpeg,.png,.pdf"
                        class="form-control-custom">
                 <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">
-                    {{ app()->getLocale() === 'ar' ? 'المقبول: JPG، PNG، PDF • اتركه فارغاً لإعادة استخدام المستندات السابقة' : 'Accepted: JPG, PNG, PDF • Leave empty to re-use previous documents' }}
+                    {{ app()->getLocale() === 'ar' ? 'المقبول: JPG، PNG، PDF • حمّل ملفاً واحداً لكل مستند' : 'Accepted: JPG, PNG, PDF • Upload one file per document' }}
                 </div>
             </div>
 
@@ -106,12 +113,12 @@
                 <label class="form-label-custom">{{ __('pages.additional_notes') }}</label>
                 <textarea name="notes" rows="3"
                           class="form-control-custom"
-                          placeholder="{{ app()->getLocale() === 'ar' ? 'اذكر سبب الرفض أو أضف مزيداً من التفاصيل…' : 'Address the reason for rejection or add more details…' }}">{{ old('notes', $citizenRequest->notes) }}</textarea>
+                          placeholder="{{ app()->getLocale() === 'ar' ? 'أي تفاصيل ذات صلة بطلبك…' : 'Any relevant details about your request…' }}">{{ old('notes', $citizenRequest->notes) }}</textarea>
             </div>
 
             <div class="d-flex gap-3">
                 <button type="submit" class="btn-gold" style="flex:1;justify-content:center;">
-                    <i class="bi bi-arrow-repeat"></i> {{ app()->getLocale() === 'ar' ? 'إعادة إرسال الطلب' : 'Resubmit Request' }}
+                    <i class="bi bi-arrow-repeat"></i> {{ app()->getLocale() === 'ar' ? 'إعادة الإرسال' : 'Resubmit' }}
                 </button>
                 <a href="{{ route('citizen.my-requests') }}" class="btn-ghost" style="flex:1;justify-content:center;">
                     {{ __('app.cancel') }}
@@ -121,6 +128,8 @@
     </div>
 </div>
 </div>
+
+@endif
 
 @endsection
 
@@ -138,25 +147,41 @@ function filterServices() {
             opt.style.display = '';
         } else {
             opt.style.display = 'none';
-            if (opt.selected) { opt.selected = false; serviceInfo.style.display = 'none'; }
+            if (opt.selected) {
+                opt.selected = false;
+                serviceInfo.style.display = 'none';
+            }
         }
     });
 }
 
 function showServiceInfo() {
     const selected = serviceSelect.options[serviceSelect.selectedIndex];
+    const uploadSection = document.getElementById('docs-upload-section');
+    const uploadHint    = document.getElementById('docs-upload-hint');
+
     if (selected && selected.dataset.price !== undefined) {
         document.getElementById('service-price').textContent = parseFloat(selected.dataset.price).toFixed(2);
         const docs = selected.dataset.docs || '';
         document.getElementById('service-docs').textContent = docs || 'None specified';
         serviceInfo.style.display = 'block';
+
+        if (docs && docs !== 'null' && docs !== '[]') {
+            uploadHint.textContent = '— ' + docs;
+            uploadSection.style.display = 'block';
+        } else {
+            uploadSection.style.display = 'none';
+        }
     } else {
         serviceInfo.style.display = 'none';
+        uploadSection.style.display = 'none';
     }
 }
 
 officeSelect.addEventListener('change', filterServices);
 serviceSelect.addEventListener('change', showServiceInfo);
+
 filterServices();
 showServiceInfo();
-</sc
+</script>
+@endpush

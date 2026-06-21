@@ -352,4 +352,11 @@ function showQR(uuid, serviceName) {
         color: { dark: '#1e3a5f', light: '#ffffff' }
     }, function(err, c) {
         if (!err) {
-            c.style.borderRadius =
+            c.style.borderRadius = '8px';
+            canvas.appendChild(c);
+        }
+    });
+    modal.style.display = 'flex';
+}
+</script>
+@endpush

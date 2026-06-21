@@ -390,4 +390,5 @@ function showNotification(msg) {
 }
 @endif
 </script>
-<div data-pending-count="{{ $requests->whereIn('status',['pending','pending_payment'])->count() }}" style="display:none;">
+<div data-pending-count="{{ $requests->whereIn('status',['pending','pending_payment'])->count() }}" style="display:none;"></div>
+@endsection

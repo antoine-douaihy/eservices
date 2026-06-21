@@ -366,4 +366,14 @@ async function poll(){
         if(msgs.length){
             removeEmpty();
             const atBottom = chatEl.scrollHeight - chatEl.scrollTop - chatEl.clientHeight < 80;
-            msgs.forEach(m=>{ mkBubble
+            msgs.forEach(m=>{ mkBubble(m); lastId = m.id; });
+            if(atBottom) chatEl.scrollTop = chatEl.scrollHeight;
+        }
+    } catch {}
+}
+setInterval(poll, 5000);
+
+sendBtn.addEventListener('click', sendMessage);
+input.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
+</script>
+@endpush

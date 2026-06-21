@@ -131,4 +131,10 @@
                     </a>
                 @endif
             </div>
-        @endi
+        @endif
+    @endif
+
+</div>
+</div>
+
+@endsection

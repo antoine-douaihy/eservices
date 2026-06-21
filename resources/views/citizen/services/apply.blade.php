@@ -526,4 +526,14 @@ document.head.appendChild(style);
 
 // On validation error reload: jump to the step that has errors
 const __errorKeys = (document.getElementById('applyForm').dataset.errorKeys || '').split(',').filter(Boolean);
-if (
+if (__errorKeys.some(k => k.startsWith('doc_'))) {
+    goToStep(2);
+}
+
+document.getElementById('applyForm').addEventListener('submit', function() {
+    const btn = document.getElementById('submitBtn');
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Submitting…';
+    setTimeout(() => { btn.disabled = true; }, 0);
+});
+</script>
+@endpush

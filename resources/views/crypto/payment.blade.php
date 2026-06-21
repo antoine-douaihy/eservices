@@ -208,4 +208,8 @@ function copyWallet() {
     navigator.clipboard.writeText(el.value).then(() => {
         const btn = el.nextElementSibling;
         btn.innerHTML = '<i class="bi bi-check-lg"></i> Copied!';
-        setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard"></i> Copy'
+        setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard"></i> Copy'; }, 2000);
+    });
+}
+</script>
+@endpush

@@ -169,4 +169,5 @@ serviceSelect.addEventListener('change', showServiceInfo);
 
 filterServices();
 showServiceInfo();
-</sc
+</script>
+@endpush

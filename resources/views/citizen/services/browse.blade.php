@@ -175,4 +175,14 @@
                 @if($services->hasMorePages())
                     <a href="{{ $services->nextPageUrl() }}"
                        style="background:#ffffff;border:1px solid var(--border);color:var(--text);padding:0.5rem 1rem;border-radius:8px;text-decoration:none;font-size:0.875rem;box-shadow:0 1px 2px rgba(0,0,0,0.04);">
-                        {{ __('pages.next_word') }} <i class="bi bi-chevron-right"></
+                        {{ __('pages.next_word') }} <i class="bi bi-chevron-right"></i>
+                    </a>
+                @endif
+            </div>
+        @endif
+    @endif
+
+</div>
+</div>
+
+@endsection

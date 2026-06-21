@@ -1142,4 +1142,4 @@ document.getElementById('regForm').addEventListener('submit', function(e) {
 @endif
 </script>
 </body>
-<
+</html>
