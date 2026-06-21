@@ -208,4 +208,158 @@
         flex-shrink: 0;
         transition: transform 0.15s, box-shadow 0.15s;
     }
-    .chatbot-send:hover { trans
+    .chatbot-send:hover { transform: scale(1.08); box-shadow: 0 4px 14px rgba(30,58,95,0.35); }
+    html[dir="rtl"] .chatbot-send i { transform: scaleX(-1); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+        .chatbot-wrapper { right: 16px; bottom: 16px; }
+        html[dir="rtl"] .chatbot-wrapper { left: 16px; }
+        .chatbot-window {
+            position: fixed; top: 16px; left: 16px; right: 16px; bottom: 16px;
+            width: auto; height: auto; border-radius: 16px;
+        }
+        .chatbot-toggle span.toggle-label { display: none; }
+        .chatbot-toggle { padding: 1rem; border-radius: 50%; }
+    }
+</style>
+
+<div class="chatbot-wrapper">
+    <button id="chatbot-toggle" class="chatbot-toggle" aria-label="{{ __('app.chatbot_ask_for_help') }}">
+        <i class="bi bi-chat-dots-fill"></i>
+        <span class="toggle-label">{{ __('app.chatbot_ask_for_help') }}</span>
+    </button>
+
+    <div id="chatbot-window" class="chatbot-window">
+        <div class="chatbot-header">
+            <div class="chatbot-header-info">
+                <div class="chatbot-avatar"><i class="bi bi-building"></i></div>
+                <div>
+                    <div class="chatbot-header-title">{{ __('app.chatbot_title') }}</div>
+                    <div class="chatbot-header-status"><span class="dot"></span> {{ __('app.chatbot_online') }}</div>
+                </div>
+            </div>
+            <button id="chatbot-close" class="chatbot-close" aria-label="{{ __('app.chatbot_close') }}">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div id="chatbot-messages" class="chatbot-messages">
+            <div class="message-row bot-row">
+                <div class="message-avatar"><i class="bi bi-building"></i></div>
+                <div class="message bot-message">{{ __('app.chatbot_greeting') }}</div>
+            </div>
+        </div>
+
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbot-input" class="chatbot-input" placeholder="{{ __('app.chatbot_placeholder') }}" aria-label="{{ __('app.chatbot_placeholder') }}">
+            <button id="chatbot-send" class="chatbot-send" aria-label="{{ __('app.chatbot_send') }}">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('chatbot-toggle');
+        const closeBtn = document.getElementById('chatbot-close');
+        const chatWindow = document.getElementById('chatbot-window');
+        const sendBtn = document.getElementById('chatbot-send');
+        const inputField = document.getElementById('chatbot-input');
+        const messagesArea = document.getElementById('chatbot-messages');
+        const i18n = {
+            thinking: @json(__('app.chatbot_thinking')),
+            fallback: @json(__('app.chatbot_fallback')),
+            error: @json(__('app.chatbot_error')),
+        };
+
+        // Toggle chat visibility
+        toggleBtn.addEventListener('click', () => {
+            chatWindow.style.display = 'flex';
+            toggleBtn.style.display = 'none';
+            inputField.focus();
+        });
+
+        closeBtn.addEventListener('click', () => {
+            chatWindow.style.display = 'none';
+            toggleBtn.style.display = 'flex';
+        });
+
+        // Handle sending messages
+        async function sendMessage() {
+            const text = inputField.value.trim();
+            if (!text) return;
+
+            // 1. Add user message to UI
+            addMessage(text, 'user-message');
+            inputField.value = '';
+
+            // 2. Add temporary typing indicator
+            const loadingId = 'loading-' + Date.now();
+            addTyping(loadingId);
+
+            try {
+                // 3. Send request to your Laravel backend
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Essential for Laravel security
+                    },
+                    body: JSON.stringify({ message: text })
+                });
+
+                const data = await response.json();
+
+                // 4. Remove loading message and add real response
+                document.getElementById(loadingId)?.remove();
+                addMessage(data.reply || i18n.fallback, 'bot-message');
+
+            } catch (error) {
+                document.getElementById(loadingId)?.remove();
+                addMessage(i18n.error, 'bot-message');
+            }
+        }
+
+        function addMessage(text, className, id = null) {
+            const isUser = className === 'user-message';
+            const row = document.createElement('div');
+            row.className = 'message-row ' + (isUser ? 'user-row' : 'bot-row');
+            if (id) row.id = id;
+
+            if (!isUser) {
+                const avatar = document.createElement('div');
+                avatar.className = 'message-avatar';
+                avatar.innerHTML = '<i class="bi bi-building"></i>';
+                row.appendChild(avatar);
+            }
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + className;
+            msgDiv.textContent = text;
+            row.appendChild(msgDiv);
+
+            messagesArea.appendChild(row);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function addTyping(id) {
+            const row = document.createElement('div');
+            row.className = 'message-row bot-row';
+            row.id = id;
+            row.innerHTML = `
+                <div class="message-avatar"><i class="bi bi-building"></i></div>
+                <div class="message bot-message">
+                    <div class="typing-dots"><span></span><span></span><span></span></div>
+                </div>`;
+            messagesArea.appendChild(row);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        inputField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+    });
+</script>
