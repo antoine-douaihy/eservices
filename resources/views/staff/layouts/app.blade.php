@@ -142,6 +142,7 @@
             font-family: 'Syne', sans-serif;
             font-weight: 700; font-size: 1.1rem; color: #fff;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            min-width: 0; flex: 1 1 auto;
         }
 
         .btn-menu-toggle {
@@ -178,6 +179,8 @@
             .btn-menu-toggle { display: flex; }
             .content-area { padding: 1.1rem; }
             .staff-topnav .d-flex.align-items-center.gap-3 > span:not(.badge-active) { display: none; }
+            .staff-topnav > div:last-child { flex-shrink: 0; }
+            .page-title { font-size: 0.95rem; }
         }
 
         /* CARD */

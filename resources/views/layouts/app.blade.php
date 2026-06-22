@@ -149,8 +149,8 @@
         }
         .sidebar-overlay.show { display: block; opacity: 1; }
 
-        .topnav-title-group { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
-        .page-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .topnav-title-group { display: flex; align-items: center; gap: 0.75rem; min-width: 0; flex: 1 1 auto; }
+        .page-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1 1 auto; }
 
         .page-title {
             font-family: 'Syne', sans-serif;
@@ -412,6 +412,8 @@
             .content-area, .content-area-guest { padding: 1.1rem; }
             .btn-menu-toggle { display: flex; }
             .notif-panel { right: -60px; width: 290px; }
+            .app-topnav > div:last-child { flex-shrink: 0; }
+            .page-title { font-size: 1.1rem; }
             .guest-topnav { padding: 0 1rem; flex-wrap: wrap; height: auto; gap: 0.6rem; padding-top: 0.6rem; padding-bottom: 0.6rem; }
             .guest-topnav nav { flex-wrap: wrap; gap: 0.5rem !important; }
         }

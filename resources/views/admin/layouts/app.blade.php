@@ -167,6 +167,8 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            min-width: 0;
+            flex: 1 1 auto;
         }
 
         .btn-menu-toggle {
@@ -444,6 +446,8 @@
             .btn-menu-toggle { display: flex; }
             .content-area { padding: 1.1rem; }
             .admin-topnav .d-flex.align-items-center.gap-3 > span:not(.badge-active) { display: none; }
+            .admin-topnav > div:last-child { flex-shrink: 0; }
+            .page-title { font-size: 0.95rem; }
         }
 
         html[dir="rtl"] .admin-sidebar { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border); }
