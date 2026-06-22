@@ -56,7 +56,7 @@
             position: fixed;
             top: 0; left: 0;
             width: var(--sidebar-w);
-            height: 100vh;
+            height: 100vh; height: 100dvh;
             background: rgba(13,31,60,0.95);
             backdrop-filter: blur(20px);
             border-right: 1px solid var(--border);
@@ -64,6 +64,8 @@
             flex-direction: column;
             z-index: 200;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
 
         .sidebar-brand {

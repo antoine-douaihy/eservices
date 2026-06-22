@@ -50,12 +50,14 @@
         /* ── SIDEBAR ── */
         .app-sidebar {
             position: fixed; top: 0; left: 0;
-            width: var(--sidebar-w); height: 100vh;
+            width: var(--sidebar-w); height: 100vh; height: 100dvh;
             background: #ffffff;
             border-right: 1px solid var(--border);
             box-shadow: 2px 0 8px rgba(0,0,0,0.04);
             display: flex; flex-direction: column;
             z-index: 200; overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
 
         .sidebar-brand {
