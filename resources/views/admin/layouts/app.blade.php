@@ -127,8 +127,19 @@
 
         .sidebar-footer {
             margin-top: auto;
-            padding: 1rem 0.75rem 1.5rem;
+            padding: 1rem 0.75rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
             border-top: 1px solid var(--border);
+        }
+        .sidebar-footer .sidebar-link {
+            color: #f87171;
+            font-weight: 600;
+        }
+        .sidebar-footer .sidebar-link:hover {
+            background: rgba(248, 113, 113, 0.12);
+            color: #fca5a5;
+        }
+        .sidebar-footer .sidebar-link i {
+            color: #f87171;
         }
 
         /* ── TOP NAV ── */
@@ -153,7 +164,27 @@
             font-weight: 700;
             font-size: 1.1rem;
             color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+
+        .btn-menu-toggle {
+            display: none;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 9px; width: 42px; height: 42px;
+            align-items: center; justify-content: center;
+            color: #fff; font-size: 1.2rem; flex-shrink: 0;
+            margin-right: 0.75rem;
+        }
+        .btn-menu-toggle:hover { background: rgba(255,255,255,0.1); }
+
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 190;
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .sidebar-overlay.show { display: block; opacity: 1; }
 
         /* ── MAIN CONTENT ── */
         .admin-main {
@@ -406,8 +437,13 @@
         input:checked + .toggle-slider::before { transform: translateX(20px); background: #6ee7b7; }
 
         @media (max-width: 768px) {
-            .admin-sidebar { transform: translateX(-100%); }
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.25s ease; }
+            .admin-sidebar.open { transform: translateX(0); box-shadow: 6px 0 28px rgba(0,0,0,0.3); }
             .admin-main, .admin-topnav { margin-left: 0; left: 0; }
+            .admin-topnav { padding: 0 1rem; }
+            .btn-menu-toggle { display: flex; }
+            .content-area { padding: 1.1rem; }
+            .admin-topnav .d-flex.align-items-center.gap-3 > span:not(.badge-active) { display: none; }
         }
 
         html[dir="rtl"] .admin-sidebar { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border); }
@@ -512,9 +548,16 @@
     </div>
 </aside>
 
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
 <!-- ═══════════ TOP NAV ═══════════ -->
 <header class="admin-topnav">
-    <span class="page-title">@yield('page-title', 'Dashboard')</span>
+    <div class="d-flex align-items-center" style="min-width:0;">
+        <button class="btn-menu-toggle" id="menu-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+            <i class="bi bi-list"></i>
+        </button>
+        <span class="page-title">@yield('page-title', 'Dashboard')</span>
+    </div>
     <div class="d-flex align-items-center gap-3">
         <div class="lang-switch">
             <a href="{{ route('lang.switch', 'en') }}" class="{{ app()->getLocale() === 'en' ? 'active' : '' }}">EN</a>
@@ -552,6 +595,27 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    window.toggleSidebar = function () {
+        const sidebar = document.querySelector('.admin-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (!sidebar || !overlay) return;
+        const opening = !sidebar.classList.contains('open');
+        sidebar.classList.toggle('open', opening);
+        overlay.classList.toggle('show', opening);
+        document.body.style.overflow = opening ? 'hidden' : '';
+    };
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 768) {
+            const sidebar = document.querySelector('.admin-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar?.classList.remove('open');
+            overlay?.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    });
+</script>
 @stack('scripts')
 </body>
 </html>

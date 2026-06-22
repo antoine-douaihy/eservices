@@ -104,8 +104,19 @@
 
         .sidebar-footer {
             margin-top: auto;
-            padding: 1rem 0.75rem 1.5rem;
+            padding: 1rem 0.75rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
             border-top: 1px solid var(--border);
+        }
+        .sidebar-footer .sidebar-link {
+            color: #dc2626;
+            font-weight: 600;
+        }
+        .sidebar-footer .sidebar-link:hover {
+            background: rgba(220, 38, 38, 0.08);
+            color: #b91c1c;
+        }
+        .sidebar-footer .sidebar-link i {
+            color: #dc2626;
         }
 
         /* ── TOP NAV (authenticated) ── */

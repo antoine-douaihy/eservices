@@ -60,7 +60,7 @@
                 </div>
 
                 <div class="row g-3">
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <label class="form-label-custom">Service Name (English) <span style="color:#f87171;">*</span></label>
                         <input type="text" name="name" value="{{ old('name', $service->name) }}"
                                class="form-control-custom @error('name') border-danger @enderror"
@@ -68,7 +68,7 @@
                         @error('name') <div style="font-size:0.78rem;color:#f87171;margin-top:4px;">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <label class="form-label-custom">Service Name (Arabic) <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
                         <input type="text" name="name_ar" value="{{ old('name_ar', $service->name_ar) }}" dir="rtl"
                                class="form-control-custom @error('name_ar') border-danger @enderror"
@@ -76,7 +76,7 @@
                         @error('name_ar') <div style="font-size:0.78rem;color:#f87171;margin-top:4px;">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label-custom">Office (this copy) <span style="color:#f87171;">*</span></label>
                         <select name="office_id" class="form-select-custom @error('office_id') border-danger @enderror" disabled>
                             @foreach($offices as $o)
@@ -97,7 +97,7 @@
                         @error('office_id') <div style="font-size:0.78rem;color:#f87171;margin-top:4px;">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label-custom">Category</label>
                         <select name="category_id" class="form-select-custom">
                             <option value="">— No Category —</option>
