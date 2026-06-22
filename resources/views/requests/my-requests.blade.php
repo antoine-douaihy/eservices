@@ -142,7 +142,7 @@
 
         <div class="app-card" style="padding:1.25rem 1.5rem;">
             <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
-                <div style="flex:1;">
+                <div style="flex:1;min-width:0;">
                     <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                         <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--navy);font-size:1rem;">
                             {{ $req->service->display_name ?? '—' }}

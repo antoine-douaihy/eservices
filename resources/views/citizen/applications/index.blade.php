@@ -49,7 +49,7 @@
                  onmouseover="this.style.borderColor='#93c5fd';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'"
                  onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.06)'">
                 <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
-                    <div style="flex:1;">
+                    <div style="flex:1;min-width:0;">
                         <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                             <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--navy);font-size:1rem;">
                                 {{ $app->service->display_name }}

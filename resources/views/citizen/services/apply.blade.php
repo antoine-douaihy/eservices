@@ -21,17 +21,17 @@
         <div style="width:52px;height:52px;background:linear-gradient(135deg,#d1fae5,#fef3c7);border:1px solid #fde68a;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i class="bi bi-file-earmark-text-fill" style="color:var(--gold);font-size:1.3rem;"></i>
         </div>
-        <div style="flex:1;">
+        <div style="flex:1;min-width:0;">
             <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--navy);margin:0 0 0.25rem;">
                 {{ $service->display_name }}
             </h2>
-            <div style="display:flex;flex-wrap:wrap;gap:1.25rem;font-size:0.92rem;color:var(--muted);">
-                <span><i class="bi bi-building me-1"></i>{{ $service->office->name }}</span>
-                <span><i class="bi bi-geo-alt me-1"></i>{{ $service->office->municipality->name ?? '' }}</span>
-                <span><i class="bi bi-clock me-1"></i>~{{ $service->processing_days }} business day{{ $service->processing_days > 1 ? 's' : '' }}</span>
+            <div style="display:flex;flex-wrap:wrap;gap:0.75rem 1.25rem;font-size:0.92rem;color:var(--muted);min-width:0;">
+                <span style="min-width:0;"><i class="bi bi-building me-1"></i>{{ $service->office->name }}</span>
+                <span style="min-width:0;"><i class="bi bi-geo-alt me-1"></i>{{ $service->office->municipality->name ?? '' }}</span>
+                <span style="min-width:0;"><i class="bi bi-clock me-1"></i>~{{ $service->processing_days }} business day{{ $service->processing_days > 1 ? 's' : '' }}</span>
             </div>
         </div>
-        <div style="text-align:right;">
+        <div style="text-align:right;flex-shrink:0;">
             @if($service->price == 0)
                 <span style="background:#ede9fe;border:1px solid #c4b5fd;color:#5b21b6;font-size:0.92rem;padding:0.35rem 0.95rem;border-radius:20px;font-weight:600;">{{ __('pages.free') }}</span>
             @else
