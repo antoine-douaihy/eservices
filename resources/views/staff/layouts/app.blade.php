@@ -365,6 +365,11 @@
         html[dir="rtl"] .staff-sidebar { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border); }
         html[dir="rtl"] .staff-topnav { left: 0; right: var(--sidebar-w); }
         html[dir="rtl"] .staff-main { margin-left: 0; margin-right: var(--sidebar-w); }
+        @media (max-width: 768px) {
+            html[dir="rtl"] .staff-sidebar { transform: translateX(100%); }
+            html[dir="rtl"] .staff-sidebar.open { transform: translateX(0); }
+            html[dir="rtl"] .staff-main, html[dir="rtl"] .staff-topnav { margin-right: 0; right: 0; }
+        }
     </style>
     @stack('styles')
 </head>

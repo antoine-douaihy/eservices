@@ -413,7 +413,14 @@
             .app-topnav { padding: 0 1rem; }
             .content-area, .content-area-guest { padding: 1.1rem; }
             .btn-menu-toggle { display: flex; }
-            .notif-panel { right: -60px; width: 290px; }
+            .notif-panel,
+            html[dir="rtl"] .notif-panel {
+                position: fixed !important;
+                top: 70px !important;
+                left: 1rem !important;
+                right: 1rem !important;
+                width: auto !important;
+            }
             .app-topnav > div:last-child { flex-shrink: 0; }
             .page-title { font-size: 1.1rem; }
             .guest-topnav { padding: 0 1rem; flex-wrap: wrap; height: auto; gap: 0.6rem; padding-top: 0.6rem; padding-bottom: 0.6rem; }
@@ -437,6 +444,7 @@
         html[dir="rtl"] .notif-item.unread { border-left: none; border-right: 3px solid #3b82f6; }
         @media (max-width: 768px) {
             html[dir="rtl"] .app-sidebar { transform: translateX(100%); }
+            html[dir="rtl"] .app-sidebar.open { transform: translateX(0); }
             html[dir="rtl"] .app-main, html[dir="rtl"] .app-topnav { margin-right: 0; right: 0; }
         }
 

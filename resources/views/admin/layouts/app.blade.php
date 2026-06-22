@@ -455,6 +455,11 @@
         html[dir="rtl"] .admin-sidebar { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border); }
         html[dir="rtl"] .admin-topnav { left: 0; right: var(--sidebar-w); }
         html[dir="rtl"] .admin-main { margin-left: 0; margin-right: var(--sidebar-w); }
+        @media (max-width: 768px) {
+            html[dir="rtl"] .admin-sidebar { transform: translateX(100%); }
+            html[dir="rtl"] .admin-sidebar.open { transform: translateX(0); }
+            html[dir="rtl"] .admin-main, html[dir="rtl"] .admin-topnav { margin-right: 0; right: 0; }
+        }
         .lang-switch { display: flex; align-items: center; gap: 0.3rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 9px; padding: 0.3rem 0.5rem; }
         .lang-switch a { font-size: 0.78rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 6px; text-decoration: none; color: var(--muted); }
         .lang-switch a.active { background: var(--gold); color: var(--navy); }
