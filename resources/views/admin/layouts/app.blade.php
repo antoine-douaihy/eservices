@@ -505,10 +505,12 @@
 
     <div class="sidebar-section">{{ __('app.nav_operations') }}</div>
     <nav class="sidebar-nav">
+        @if(Auth::user()->role !== 'admin')
         <a href="{{ route('office.dashboard') }}"
            class="sidebar-link {{ request()->routeIs('office.dashboard') ? 'active' : '' }}">
             <i class="bi bi-inbox-fill"></i> {{ __('app.nav_service_requests') }}
         </a>
+        @endif
         <a href="{{ route('office.appointments.index') }}"
            class="sidebar-link {{ request()->routeIs('office.appointments.*') ? 'active' : '' }}">
             <i class="bi bi-calendar-check-fill"></i> {{ __('app.nav_appointments') }}
