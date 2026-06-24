@@ -56,7 +56,7 @@ class HomeController extends Controller
     {
         $services = Service::with(['office', 'requiredDocuments'])
             ->where('is_active', true)
-            ->orderBy('name_en')
+            ->orderBy('name')
             ->get();
 
         return view('citizen.how-it-works', compact('services'));
