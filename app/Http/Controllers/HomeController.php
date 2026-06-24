@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Service;
 
 class HomeController extends Controller
 
@@ -53,6 +54,11 @@ class HomeController extends Controller
 
     public function howItWorks()
     {
-        return view('citizen.how-it-works');
+        $services = Service::with(['office', 'requiredDocuments'])
+            ->where('is_active', true)
+            ->orderBy('name_en')
+            ->get();
+
+        return view('citizen.how-it-works', compact('services'));
     }
 }

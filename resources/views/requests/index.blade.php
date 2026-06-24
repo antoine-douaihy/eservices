@@ -127,7 +127,7 @@
                     @endphp
                     <tr data-date="{{ $req->created_at->format('Y-m-d') }}"
                         data-status="{{ $req->status }}"
-                        data-name="{{ strtolower($req->user->first_name . ' ' . $req->user->last_name) }}"
+                        data-name="{{ strtolower(($req->user?->first_name ?? '') . ' ' . ($req->user?->last_name ?? '')) }}"
                         style="{{ $slaWarning ? 'border-left:3px solid rgba(239,68,68,0.6);' : '' }}">
                         <td>
                             @if($isActionable)
@@ -147,11 +147,11 @@
                             @endif
                         </td>
                         <td>
-                            <div style="font-weight:600;color:#fff;">{{ $req->user->first_name }} {{ $req->user->last_name }}</div>
-                            <div style="font-size:0.75rem;color:var(--muted);">{{ $req->user->email }}</div>
+                            <div style="font-weight:600;color:#fff;">{{ $req->user?->first_name ?? '—' }} {{ $req->user?->last_name ?? '' }}</div>
+                            <div style="font-size:0.75rem;color:var(--muted);">{{ $req->user?->email ?? '—' }}</div>
                         </td>
-                        <td style="color:var(--text);font-weight:500;">{{ $req->service->name }}</td>
-                        <td style="color:var(--muted);font-size:0.82rem;">{{ $req->office->name }}</td>
+                        <td style="color:var(--text);font-weight:500;">{{ $req->service?->name ?? '—' }}</td>
+                        <td style="color:var(--muted);font-size:0.82rem;">{{ $req->office?->name ?? '—' }}</td>
                         <td>
                             <div style="font-size:0.82rem;color:var(--muted);">{{ $req->created_at->format('d M Y') }}</div>
                             <div style="font-size:0.75rem;color:var(--muted);">{{ $req->created_at->format('H:i') }}</div>
