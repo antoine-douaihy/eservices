@@ -604,7 +604,7 @@
         </button>
         <span class="page-title">@yield('page-title', config('app.name', 'E-Services'))</span>
     </div>
-    <div class="d-flex align-items-center gap-3">
+    <div class="d-flex align-items-center gap-3" style="flex-shrink:0;">
 
         {{-- Language Switch --}}
         <div class="lang-switch">

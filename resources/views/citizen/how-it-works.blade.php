@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', app()->getLocale() === 'ar' ? 'كيف تعمل العملية' : 'How It Works')
+@section('page-title', app()->getLocale() === 'ar' ? 'كيف تعمل العملية' : 'How It Works')
 
 @section('content')
 

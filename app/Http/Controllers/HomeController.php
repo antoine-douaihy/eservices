@@ -57,7 +57,9 @@ class HomeController extends Controller
         $services = Service::with(['office', 'requiredDocuments'])
             ->where('is_active', true)
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->unique('group_uuid')
+            ->values();
 
         return view('citizen.how-it-works', compact('services'));
     }
