@@ -3,10 +3,7 @@
 @section('title', app()->getLocale() === 'ar' ? 'كيف تعمل العملية' : 'How It Works')
 @section('page-title', app()->getLocale() === 'ar' ? 'كيف تعمل العملية' : 'How It Works')
 
-@section('content')
-
-@php $isAr = app()->getLocale() === 'ar'; @endphp
-
+@push('styles')
 <style>
     .wf-header { text-align:center; max-width:680px; margin:0 auto 2.5rem; }
     .wf-badge {
@@ -26,7 +23,7 @@
 
     .wf-step {
         position:relative; display:flex; gap:1.25rem; margin-bottom:0.5rem;
-        padding:1rem 0; cursor:pointer; z-index:1;
+        padding:1rem 0; cursor:pointer;
     }
     .wf-step-icon {
         width:56px; height:56px; border-radius:50%; flex-shrink:0;
@@ -49,6 +46,11 @@
     .wf-services-card { max-width:760px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; padding:1.75rem; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
     .wf-doc-row { display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:var(--text); margin-bottom:0.4rem; }
 </style>
+@endpush
+
+@section('content')
+
+@php $isAr = app()->getLocale() === 'ar'; @endphp
 
 <div style="padding:2rem 0 4rem;">
 

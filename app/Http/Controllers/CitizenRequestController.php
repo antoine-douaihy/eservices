@@ -240,7 +240,9 @@ class CitizenRequestController extends Controller
         }
 
         $requests = $query->get()
-            ->groupBy(fn($req) => $req->created_at->format('d M Y'));
+            ->groupBy(fn($req) => $req->created_at
+                ? $req->created_at->format('d M Y')
+                : 'Unknown Date');
 
         return View::make('requests.index', compact('requests'));
     }

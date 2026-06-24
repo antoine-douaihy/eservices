@@ -151,8 +151,9 @@
         }
         .sidebar-overlay.show { display: block; opacity: 1; }
 
-        .topnav-title-group { display: flex; align-items: center; gap: 0.75rem; min-width: 0; flex: 1 1 auto; }
+        .topnav-title-group { display: flex; align-items: center; gap: 0.75rem; min-width: 0; flex: 1 1 auto; overflow: hidden; }
         .page-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1 1 auto; }
+        .topnav-right-cluster { flex: 0 0 auto !important; flex-shrink: 0 !important; display: flex; align-items: center; gap: 0.75rem; }
 
         .page-title {
             font-family: 'Syne', sans-serif;
@@ -604,7 +605,7 @@
         </button>
         <span class="page-title">@yield('page-title', config('app.name', 'E-Services'))</span>
     </div>
-    <div class="d-flex align-items-center gap-3" style="flex-shrink:0;">
+    <div class="topnav-right-cluster">
 
         {{-- Language Switch --}}
         <div class="lang-switch">

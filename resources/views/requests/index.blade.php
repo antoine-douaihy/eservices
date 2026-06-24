@@ -123,9 +123,9 @@
                         $cryptoPayment = $req->cryptoTransactions->where('status', 'confirmed')->first();
                         $isActionable  = in_array($req->status, ['pending', 'in_review']);
                         // SLA: flag pending/in_review requests older than 3 days
-                        $slaWarning    = $isActionable && $req->created_at->diffInDays(now()) >= 3;
+                        $slaWarning    = $isActionable && $req->created_at && $req->created_at->diffInDays(now()) >= 3;
                     @endphp
-                    <tr data-date="{{ $req->created_at->format('Y-m-d') }}"
+                    <tr data-date="{{ $req->created_at?->format('Y-m-d') ?? '' }}"
                         data-status="{{ $req->status }}"
                         data-name="{{ strtolower(($req->user?->first_name ?? '') . ' ' . ($req->user?->last_name ?? '')) }}"
                         style="{{ $slaWarning ? 'border-left:3px solid rgba(239,68,68,0.6);' : '' }}">
@@ -153,8 +153,8 @@
                         <td style="color:var(--text);font-weight:500;">{{ $req->service?->name ?? '—' }}</td>
                         <td style="color:var(--muted);font-size:0.82rem;">{{ $req->office?->name ?? '—' }}</td>
                         <td>
-                            <div style="font-size:0.82rem;color:var(--muted);">{{ $req->created_at->format('d M Y') }}</div>
-                            <div style="font-size:0.75rem;color:var(--muted);">{{ $req->created_at->format('H:i') }}</div>
+                            <div style="font-size:0.82rem;color:var(--muted);">{{ $req->created_at?->format('d M Y') ?? '—' }}</div>
+                            <div style="font-size:0.75rem;color:var(--muted);">{{ $req->created_at?->format('H:i') ?? '' }}</div>
                             @if($slaWarning)
                                 <div style="font-size:0.7rem;color:#f87171;margin-top:2px;">
                                     {{ $req->created_at->diffInDays(now()) }}d overdue

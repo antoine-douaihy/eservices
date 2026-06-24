@@ -395,24 +395,67 @@ Route::get('/fix-real-services-3p8w1z', function () {
     return '<pre>' . htmlspecialchars($output) . '</pre>'
         . "<p>Active services now: {$count}. Visit /debug-services-7h2n9q for the full list.</p>";
 });
-
-Route::get('/debug-howitworks-4x9z', function () {
+Route::get('/debug-admin-requests-5m2k', function () {
+    $steps = [];
     try {
-        $services = \App\Models\Service::with(['office', 'requiredDocuments'])
-            ->where('is_active', true)
-            ->orderBy('name_en')
-            ->get();
-        return response()->json([
-            'ok'    => true,
-            'count' => $services->count(),
-            'first' => $services->first()?->toArray(),
-        ]);
+        $steps['1_raw_count'] = \App\Models\CitizenRequest::count();
+
+        $all = \App\Models\CitizenRequest::with([
+            'user', 'service', 'office', 'localPayments',
+            'cryptoTransactions', 'histories.user'
+        ])->latest()->get();
+        $steps['2_loaded'] = $all->count();
+
+        $grouped = $all->groupBy(fn($r) => $r->created_at
+            ? $r->created_at->format('d M Y')
+            : 'no-date');
+        $steps['3_grouped'] = $grouped->count();
+
+        $errors = [];
+        foreach ($all as $req) {
+            try {
+                $_ = $req->notes;
+                $_ = $req->full_name;
+                $_ = $req->phone;
+                $_ = $req->email;
+                $_ = $req->address;
+                $_ = $req->user?->first_name;
+                $_ = $req->service?->name;
+                $_ = $req->office?->name;
+                $_ = $req->histories->count();
+                $_ = $req->localPayments->count();
+                $_ = $req->cryptoTransactions->count();
+            } catch (\Throwable $inner) {
+                $errors[] = [
+                    'id'    => $req->id,
+                    'error' => $inner->getMessage(),
+                    'field' => basename($inner->getFile()) . ':' . $inner->getLine(),
+                ];
+                if (count($errors) >= 5) break;
+            }
+        }
+        $steps['4_per_record_errors'] = $errors;
+
+        return response()->json(['ok' => true, 'steps' => $steps]);
     } catch (\Throwable $e) {
         return response()->json([
             'ok'    => false,
+            'steps' => $steps,
             'error' => $e->getMessage(),
-            'file'  => $e->getFile(),
+            'file'  => basename($e->getFile()),
             'line'  => $e->getLine(),
+            'trace' => collect(explode("\n", $e->getTraceAsString()))->take(8)->all(),
+        ]);
+    }
+});
+owable $e) {
+        return response()->json([
+            'ok'    => false,
+            'steps' => $steps,
+            'error' => $e->getMessage(),
+            'file'  => basename($e->getFile()),
+            'line'  => $e->getLine(),
+            'trace' => collect(explode("\n", $e->getTraceAsString()))->take(8)->all(),
         ]);
     }
 });
