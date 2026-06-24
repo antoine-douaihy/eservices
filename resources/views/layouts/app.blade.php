@@ -422,7 +422,7 @@
                 width: auto !important;
             }
             .app-topnav > div:last-child { flex-shrink: 0; }
-            .page-title { font-size: 1.1rem; }
+            .page-title { display: none; }
             .guest-topnav { padding: 0 1rem; flex-wrap: wrap; height: auto; gap: 0.6rem; padding-top: 0.6rem; padding-bottom: 0.6rem; }
             .guest-topnav nav { flex-wrap: wrap; gap: 0.5rem !important; }
         }
@@ -813,3 +813,4 @@
 <x-chatbot />
 </body>
 </html>
+    
