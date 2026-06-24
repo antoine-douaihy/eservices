@@ -395,3 +395,24 @@ Route::get('/fix-real-services-3p8w1z', function () {
     return '<pre>' . htmlspecialchars($output) . '</pre>'
         . "<p>Active services now: {$count}. Visit /debug-services-7h2n9q for the full list.</p>";
 });
+
+Route::get('/debug-howitworks-4x9z', function () {
+    try {
+        $services = \App\Models\Service::with(['office', 'requiredDocuments'])
+            ->where('is_active', true)
+            ->orderBy('name_en')
+            ->get();
+        return response()->json([
+            'ok'    => true,
+            'count' => $services->count(),
+            'first' => $services->first()?->toArray(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'ok'    => false,
+            'error' => $e->getMessage(),
+            'file'  => $e->getFile(),
+            'line'  => $e->getLine(),
+        ]);
+    }
+});
