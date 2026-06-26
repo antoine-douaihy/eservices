@@ -182,6 +182,7 @@ Route::middleware(['auth'])->group(function () {
     // Citizen: Chat with office per request
     Route::get('/requests/{citizenRequest}/chat',     [\App\Http\Controllers\CitizenRequestMessageController::class, 'citizenShow'])->name('citizen.requests.chat');
     Route::post('/requests/{citizenRequest}/chat',    [\App\Http\Controllers\CitizenRequestMessageController::class, 'citizenSend'])->name('citizen.requests.chat.send');
+    Route::get('/messages/poll',                      [\App\Http\Controllers\CitizenRequestMessageController::class, 'globalPoll'])->name('messages.poll');
     Route::get('/requests/{citizenRequest}/messages', [\App\Http\Controllers\CitizenRequestMessageController::class, 'citizenMessages'])->name('citizen.requests.messages');
 
     // Citizen: Appointments
@@ -252,6 +253,7 @@ Route::middleware(['auth', 'role:admin,office'])->prefix('office')->group(functi
     // Chat per CitizenRequest
     Route::get('/requests/{citizenRequest}/chat',               [\App\Http\Controllers\CitizenRequestMessageController::class, 'show'])->name('office.requests.chat');
     Route::post('/requests/{citizenRequest}/chat',              [\App\Http\Controllers\CitizenRequestMessageController::class, 'store'])->name('office.requests.chat.send');
+    Route::get('/messages/poll',                                [\App\Http\Controllers\CitizenRequestMessageController::class, 'globalPoll'])->name('office.messages.poll');
     Route::get('/requests/{citizenRequest}/messages',           [\App\Http\Controllers\CitizenRequestMessageController::class, 'officeMessages'])->name('office.requests.messages');
 });
 

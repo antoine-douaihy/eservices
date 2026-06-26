@@ -634,5 +634,87 @@
     });
 </script>
 @stack('scripts')
+
+<script>
+// ── Global Chat Message Popup (office/admin) ───────────────────────────────
+(function () {
+    const POLL_URL  = '{{ route("office.messages.poll") }}';
+    const STORAGE_KEY = 'chat_last_msg_id';
+
+    let lastId = parseInt(localStorage.getItem(STORAGE_KEY) || '0');
+
+    function showChatToast(msg) {
+        const toast = document.createElement('div');
+        toast.style.cssText = [
+            'position:fixed','bottom:1.5rem','right:1.5rem','z-index:99999',
+            'background:#0d1f3c','border:1px solid rgba(214,158,46,0.5)',
+            'border-radius:14px','padding:1rem 1.25rem','max-width:320px',
+            'box-shadow:0 8px 32px rgba(0,0,0,0.5)',
+            'cursor:pointer','transition:opacity 0.3s',
+            'display:flex','align-items:flex-start','gap:0.75rem',
+        ].join(';');
+
+        toast.innerHTML = `
+            <div style="width:36px;height:36px;background:rgba(214,158,46,0.15);border:1px solid rgba(214,158,46,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="bi bi-chat-text-fill" style="color:#d69e2e;font-size:1rem;"></i>
+            </div>
+            <div style="min-width:0;">
+                <div style="font-size:0.78rem;color:#d69e2e;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px;">New Message</div>
+                <div style="font-size:0.875rem;color:#fff;font-weight:600;margin-bottom:2px;">${msg.service_name}</div>
+                <div style="font-size:0.8rem;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${msg.content}</div>
+            </div>
+            <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:#64748b;font-size:1rem;padding:0;line-height:1;margin-left:auto;flex-shrink:0;cursor:pointer;">&times;</button>
+        `;
+
+        toast.addEventListener('click', function (e) {
+            if (e.target.tagName === 'BUTTON') return;
+            window.location.href = msg.chat_url;
+        });
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 7000);
+    }
+
+    function pollMessages() {
+        fetch(POLL_URL + '?last_id=' + lastId, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.ok ? r.json() : [])
+        .then(messages => {
+            if (!Array.isArray(messages) || messages.length === 0) return;
+            messages.slice(0, 3).forEach((msg, i) => {
+                setTimeout(() => showChatToast(msg), i * 600);
+            });
+            const maxId = Math.max(...messages.map(m => m.id));
+            if (maxId > lastId) {
+                lastId = maxId;
+                localStorage.setItem(STORAGE_KEY, lastId);
+            }
+        })
+        .catch(() => {});
+    }
+
+    // On first load, silently record the current max ID so stale messages don't pop
+    if (lastId === 0) {
+        fetch(POLL_URL + '?last_id=0', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.ok ? r.json() : [])
+        .then(messages => {
+            if (Array.isArray(messages) && messages.length > 0) {
+                lastId = Math.max(...messages.map(m => m.id));
+                localStorage.setItem(STORAGE_KEY, lastId);
+            }
+        })
+        .catch(() => {});
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        setInterval(pollMessages, 15000);
+    });
+})();
+</script>
 </body>
 </html>

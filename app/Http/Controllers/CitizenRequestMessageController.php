@@ -113,6 +113,42 @@ class CitizenRequestMessageController extends Controller
         ]));
     }
 
+    // Global poll — new chat messages across all requests for the logged-in user
+    public function globalPoll(Request $request)
+    {
+        $user   = Auth::user();
+        $lastId = $request->integer('last_id', 0);
+
+        $query = CitizenRequestMessage::with(['citizenRequest.service'])
+            ->where('id', '>', $lastId)
+            ->latest('id')
+            ->take(5);
+
+        if ($user->role === 'citizen') {
+            // Citizen sees messages sent by office staff (is_office = true) on their own requests
+            $query->where('is_office', true)
+                  ->whereHas('citizenRequest', fn($q) => $q->where('user_id', $user->id));
+        } else {
+            // Office / admin sees messages sent by citizens (is_office = false)
+            $query->where('is_office', false);
+            if ($user->role === 'office' && $user->office_id) {
+                $query->whereHas('citizenRequest', fn($q) => $q->where('office_id', $user->office_id));
+            }
+        }
+
+        $isCitizen = $user->role === 'citizen';
+
+        return response()->json($query->get()->map(fn($m) => [
+            'id'           => $m->id,
+            'content'      => \Str::limit($m->content, 80),
+            'request_id'   => $m->citizen_request_id,
+            'service_name' => $m->citizenRequest?->service?->name ?? 'Service Request',
+            'chat_url'     => $isCitizen
+                ? route('citizen.requests.chat',  $m->citizen_request_id)
+                : route('office.requests.chat',   $m->citizen_request_id),
+        ]));
+    }
+
     private function authorizeOffice(CitizenRequest $cr): void
     {
         $user = Auth::user();
