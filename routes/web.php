@@ -448,3 +448,55 @@ Route::get('/debug-admin-requests-5m2k', function () {
         ]);
     }
 });
+
+Route::get('/debug-office-dashboard-8k3p', function () {
+    $steps = [];
+    try {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $steps['user_role'] = $user?->role ?? 'not-logged-in';
+        $steps['office_id'] = $user?->office_id ?? null;
+
+        $query = \App\Models\CitizenRequest::with(['user','service','office','localPayments','cryptoTransactions'])->latest();
+        if ($user?->role === 'office' && $user?->office_id) {
+            $query->where('office_id', $user->office_id);
+        }
+        $requests = $query->get();
+        $steps['requests_count'] = $requests->count();
+
+        $base = ($user?->role === 'office' && $user?->office_id)
+            ? \App\Models\CitizenRequest::where('office_id', $user->office_id)
+            : \App\Models\CitizenRequest::query();
+
+        $steps['stats'] = [
+            'pending'   => (clone $base)->whereIn('status', ['pending','pending_payment'])->count(),
+            'in_review' => (clone $base)->where('status', 'in_review')->count(),
+            'approved'  => (clone $base)->where('status', 'approved')->count(),
+        ];
+
+        $errors = [];
+        foreach ($requests as $req) {
+            try {
+                $_ = $req->user?->first_name;
+                $_ = $req->service?->name;
+                $_ = $req->created_at?->format('d M Y');
+                $_ = $req->payment_status;
+                $_ = $req->localPayments->count();
+                $_ = $req->cryptoTransactions->count();
+            } catch (\Throwable $inner) {
+                $errors[] = ['id' => $req->id, 'error' => $inner->getMessage()];
+                if (count($errors) >= 5) break;
+            }
+        }
+        $steps['per_record_errors'] = $errors;
+
+        return response()->json(['ok' => true, 'steps' => $steps]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'ok' => false, 'steps' => $steps,
+            'error' => $e->getMessage(),
+            'file'  => basename($e->getFile()),
+            'line'  => $e->getLine(),
+            'trace' => collect(explode("\n", $e->getTraceAsString()))->take(6)->all(),
+        ]);
+    }
+});

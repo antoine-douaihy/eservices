@@ -216,13 +216,13 @@
                     <tr>
                         <td style="color:var(--muted);font-size:0.8rem;">#{{ $req->id }}</td>
                         <td>
-                            <div style="font-weight:600;color:#fff;font-size:0.875rem;">{{ $req->user->first_name }} {{ $req->user->last_name }}</div>
-                            <div style="font-size:0.75rem;color:var(--muted);">{{ $req->user->email }}</div>
+                            <div style="font-weight:600;color:#fff;font-size:0.875rem;">{{ $req->user?->first_name ?? '—' }} {{ $req->user?->last_name ?? '' }}</div>
+                            <div style="font-size:0.75rem;color:var(--muted);">{{ $req->user?->email ?? '—' }}</div>
                         </td>
-                        <td style="font-weight:500;color:var(--text);font-size:0.875rem;">{{ $req->service->name ?? '—' }}</td>
+                        <td style="font-weight:500;color:var(--text);font-size:0.875rem;">{{ $req->service?->name ?? '—' }}</td>
                         <td style="color:var(--muted);font-size:0.8rem;">
-                            {{ $req->created_at->format('d M Y') }}<br>
-                            <span style="font-size:0.75rem;">{{ $req->created_at->format('H:i') }}</span>
+                            {{ $req->created_at?->format('d M Y') ?? '—' }}<br>
+                            <span style="font-size:0.75rem;">{{ $req->created_at?->format('H:i') ?? '' }}</span>
                         </td>
                         <td>
                             @if($req->payment_status === 'paid')
