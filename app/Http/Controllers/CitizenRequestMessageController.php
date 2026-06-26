@@ -34,6 +34,14 @@ class CitizenRequestMessageController extends Controller
         $msg->load('user');
         try { broadcast(new ChatMessageSent($msg))->toOthers(); } catch (\Throwable $e) {}
 
+        // Email the citizen
+        try {
+            $citizen = $citizenRequest->user;
+            if ($citizen) {
+                $citizen->notify(new \App\Notifications\NewChatMessage($msg, $citizenRequest));
+            }
+        } catch (\Throwable $e) {}
+
         return response()->json([
             'id'        => $msg->id,
             'content'   => $msg->content,
@@ -84,6 +92,17 @@ class CitizenRequestMessageController extends Controller
 
         $msg->load('user');
         try { broadcast(new ChatMessageSent($msg))->toOthers(); } catch (\Throwable $e) {}
+
+        // Email all staff assigned to this office
+        try {
+            $citizenRequest->load(['office']);
+            $officeStaff = \App\Models\User::where('office_id', $citizenRequest->office_id)
+                ->whereIn('role', ['office', 'admin'])
+                ->get();
+            foreach ($officeStaff as $staff) {
+                $staff->notify(new \App\Notifications\NewChatMessage($msg, $citizenRequest));
+            }
+        } catch (\Throwable $e) {}
 
         return response()->json([
             'id'        => $msg->id,
