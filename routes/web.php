@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\MunicipalityController as AdminMunicipalityContro
 use App\Http\Controllers\Admin\ServiceRequestController as AdminServiceRequestController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
 // Staff
 use App\Http\Controllers\Staff\ServiceController;
@@ -300,6 +301,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
         'update'  => 'admin.services.update',
         'destroy' => 'admin.services.destroy',
     ]);
+
+    // Platform settings
+    Route::get('/settings',  [AdminSettingsController::class, 'index'])->name('admin.settings');
+    Route::post('/settings', [AdminSettingsController::class, 'update'])->name('admin.settings.update');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

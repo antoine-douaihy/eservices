@@ -8,6 +8,7 @@ use App\Models\ServiceRequest;
 use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
+use App\Models\Setting;
 
 class PaymentController extends Controller
 {
@@ -63,13 +64,29 @@ class PaymentController extends Controller
 
         Stripe::setApiKey(config('services.stripe.secret'));
 
+        $currency    = strtolower($citizenRequest->service->currency ?? 'usd');
+        $price       = (float) $citizenRequest->service->price;
+        $displayName = $citizenRequest->service->name;
+
+        // LBP is not a Stripe-supported currency — convert to USD using the admin-set rate
+        if ($currency === 'lbp') {
+            $lbpRate    = (float) Setting::get('lbp_usd_rate', 89500);
+            $usdAmount  = $price / $lbpRate;
+            $currency   = 'usd';
+            $displayName .= ' (' . number_format($price, 0) . ' LBP)';
+        } else {
+            $usdAmount = $price;
+        }
+
+        $unitAmount = (int) round($usdAmount * 100); // cents
+
         $session = Session::create([
             'payment_method_types' => ['card'],
             'line_items'           => [[
                 'price_data' => [
-                    'currency'     => strtolower($citizenRequest->service->currency ?? 'usd'),
-                    'product_data' => ['name' => $citizenRequest->service->name],
-                    'unit_amount'  => (int) ($citizenRequest->service->price * 100),
+                    'currency'     => $currency,
+                    'product_data' => ['name' => $displayName],
+                    'unit_amount'  => $unitAmount,
                 ],
                 'quantity' => 1,
             ]],

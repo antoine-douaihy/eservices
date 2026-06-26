@@ -500,6 +500,10 @@
            class="sidebar-link {{ request()->routeIs('admin.services.*') ? 'active' : '' }}">
             <i class="bi bi-grid-fill"></i> {{ __('app.nav_admin_services') }}
         </a>
+        <a href="{{ route('admin.settings') }}"
+           class="sidebar-link {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+            <i class="bi bi-gear-fill"></i> Settings
+        </a>
     </nav>
     @endif
 
