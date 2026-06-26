@@ -456,12 +456,23 @@ Route::get('/debug-office-dashboard-8k3p', function () {
         $steps['user_role'] = $user?->role ?? 'not-logged-in';
         $steps['office_id'] = $user?->office_id ?? null;
 
+        // Step 2a: load WITHOUT messages (original)
         $query = \App\Models\CitizenRequest::with(['user','service','office','localPayments','cryptoTransactions'])->latest();
         if ($user?->role === 'office' && $user?->office_id) {
             $query->where('office_id', $user->office_id);
         }
         $requests = $query->get();
         $steps['requests_count'] = $requests->count();
+
+        // Step 2b: load WITH messages (new eager-load)
+        try {
+            $withMessages = \App\Models\CitizenRequest::with(['messages'])->latest()->get();
+            $steps['messages_loaded'] = $withMessages->count();
+            $steps['messages_table_ok'] = true;
+        } catch (\Throwable $me) {
+            $steps['messages_table_ok'] = false;
+            $steps['messages_error'] = $me->getMessage();
+        }
 
         $base = ($user?->role === 'office' && $user?->office_id)
             ? \App\Models\CitizenRequest::where('office_id', $user->office_id)
@@ -473,17 +484,29 @@ Route::get('/debug-office-dashboard-8k3p', function () {
             'approved'  => (clone $base)->where('status', 'approved')->count(),
         ];
 
+        // Step 4: touch every field the view uses in the loop
         $errors = [];
         foreach ($requests as $req) {
             try {
                 $_ = $req->user?->first_name;
+                $_ = $req->user?->last_name;
+                $_ = $req->user?->email;
                 $_ = $req->service?->name;
                 $_ = $req->created_at?->format('d M Y');
                 $_ = $req->payment_status;
+                $_ = $req->uploaded_document;
+                $_ = $req->response_document;
                 $_ = $req->localPayments->count();
                 $_ = $req->cryptoTransactions->count();
+                // routes used in the view
+                $_ = route('office.requests.chat', $req);
+                $_ = route('office.requests.status', $req);
+                $_ = route('office.requests.upload-response', $req);
+                $_ = route('office.appointments.store');
+                $_ = route('requests.approve', $req);
+                $_ = route('requests.document', [$req, 0]);
             } catch (\Throwable $inner) {
-                $errors[] = ['id' => $req->id, 'error' => $inner->getMessage()];
+                $errors[] = ['id' => $req->id, 'error' => $inner->getMessage(), 'trace_top' => $inner->getFile().':'.$inner->getLine()];
                 if (count($errors) >= 5) break;
             }
         }
