@@ -112,14 +112,26 @@ class ServiceApplicationController extends Controller
             }
         }
 
-        $validated = $request->validate($rules, [
+        $messages = [
             'full_name.required' => 'Please enter your full name.',
             'full_name.regex'    => 'Full name may only contain letters, spaces, and hyphens.',
             'phone.required'     => 'Please enter your phone number.',
             'email.required'     => 'Please enter your email address.',
             'address.required'   => 'Please enter your address.',
             'office_id.required' => 'Please select an office.',
-        ]);
+        ];
+
+        // Use the actual document name in validation errors instead of "doc_306"
+        foreach ($service->requiredDocuments as $doc) {
+            $fieldKey = 'doc_' . $doc->id;
+            $docName  = $doc->name ?? ('Document #' . $doc->id);
+            $messages[$fieldKey . '.required'] = '"' . $docName . '" is required.';
+            $messages[$fieldKey . '.file']     = '"' . $docName . '" must be a valid file.';
+            $messages[$fieldKey . '.mimes']    = '"' . $docName . '" must be a PDF, JPG, or PNG.';
+            $messages[$fieldKey . '.max']      = '"' . $docName . '" must not exceed 5MB.';
+        }
+
+        $validated = $request->validate($rules, $messages);
 
         DB::beginTransaction();
         try {

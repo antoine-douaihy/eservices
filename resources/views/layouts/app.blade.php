@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="lbp-rate" content="{{ \App\Models\Setting::get('lbp_usd_rate', 89500) }}">
     <title>{{ config('app.name', 'E-Services') }}@hasSection('title') — @yield('title')@endif</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -607,6 +608,12 @@
     </div>
     <div class="topnav-right-cluster">
 
+        {{-- Currency Toggle --}}
+        <div class="lang-switch" id="currency-toggle" onclick="toggleCurrency()" title="Switch currency" style="cursor:pointer;">
+            <span id="curr-lbp" class="active">LBP</span>
+            <span id="curr-usd">USD</span>
+        </div>
+
         {{-- Language Switch --}}
         <div class="lang-switch">
             <a href="{{ route('lang.switch', 'en') }}" class="{{ app()->getLocale() === 'en' ? 'active' : '' }}">EN</a>
@@ -697,6 +704,41 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 @stack('scripts')
+
+<script>
+// ── Global Currency Toggle ──────────────────────────────────────────────────
+const LBP_RATE = parseFloat(document.querySelector('meta[name="lbp-rate"]')?.content || 89500);
+
+function applyPriceDisplay(mode) {
+    document.querySelectorAll('.price-display').forEach(el => {
+        const lbp = parseFloat(el.dataset.lbpRaw);
+        const cur = el.dataset.currency || 'LBP';
+        if (cur !== 'LBP' || isNaN(lbp)) return; // non-LBP prices stay as-is
+        if (mode === 'usd') {
+            const usd = lbp / LBP_RATE;
+            el.textContent = '$' + usd.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+        } else {
+            el.textContent = 'ل.ل ' + Math.round(lbp).toLocaleString('en-US');
+        }
+    });
+    // toggle button active state
+    document.getElementById('curr-lbp')?.classList.toggle('active', mode === 'lbp');
+    document.getElementById('curr-usd')?.classList.toggle('active', mode === 'usd');
+}
+
+function toggleCurrency() {
+    const current = localStorage.getItem('currency_mode') || 'lbp';
+    const next = current === 'lbp' ? 'usd' : 'lbp';
+    localStorage.setItem('currency_mode', next);
+    applyPriceDisplay(next);
+}
+
+// Apply on page load
+document.addEventListener('DOMContentLoaded', function () {
+    const mode = localStorage.getItem('currency_mode') || 'lbp';
+    applyPriceDisplay(mode);
+});
+</script>
 
 @auth
 <script>

@@ -93,8 +93,15 @@
                                 {{ __('pages.free') }}
                             </span>
                         @else
-                            <span style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;font-size:0.78rem;padding:0.2rem 0.65rem;border-radius:20px;font-weight:700;">
-                                {{ $service->currency }} {{ number_format($service->price, 2) }}
+                            <span class="price-display"
+                                  data-currency="{{ $service->currency }}"
+                                  data-lbp-raw="{{ $service->price }}"
+                                  style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;font-size:0.78rem;padding:0.2rem 0.65rem;border-radius:20px;font-weight:700;">
+                                @if($service->currency === 'LBP')
+                                    ل.ل {{ number_format($service->price, 0) }}
+                                @else
+                                    {{ $service->currency }} {{ number_format($service->price, 2) }}
+                                @endif
                             </span>
                         @endif
                     </div>

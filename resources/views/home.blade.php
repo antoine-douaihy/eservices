@@ -73,7 +73,7 @@
                         <option value="{{ route('citizen.services.apply', $service) }}">
                             {{ $service->display_name }}
                             @if($service->price > 0)
-                                — {{ $service->currency }} {{ number_format($service->price, 2) }}
+                                — @if($service->currency === 'LBP')ل.ل {{ number_format($service->price, 0) }}@else{{ $service->currency }} {{ number_format($service->price, 2) }}@endif
                             @else
                                 — {{ __('pages.free') }}
                             @endif

@@ -35,8 +35,15 @@
             @if($service->price == 0)
                 <span style="background:#ede9fe;border:1px solid #c4b5fd;color:#5b21b6;font-size:0.92rem;padding:0.35rem 0.95rem;border-radius:20px;font-weight:600;">{{ __('pages.free') }}</span>
             @else
-                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.55rem;color:var(--gold);">
-                    {{ $service->currency }} {{ number_format($service->price, 2) }}
+                <div class="price-display"
+                     data-currency="{{ $service->currency }}"
+                     data-lbp-raw="{{ $service->price }}"
+                     style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.55rem;color:var(--gold);">
+                    @if($service->currency === 'LBP')
+                        ل.ل {{ number_format($service->price, 0) }}
+                    @else
+                        {{ $service->currency }} {{ number_format($service->price, 2) }}
+                    @endif
                 </div>
                 <div style="font-size:0.88rem;color:var(--muted);">{{ __('pages.service_fee') }}</div>
             @endif

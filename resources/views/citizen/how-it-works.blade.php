@@ -140,8 +140,12 @@
         <div id="svc-{{ $service->id }}" style="display:none;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
                 <strong style="color:var(--navy);">{{ $service->display_name }}</strong>
-                <span style="font-weight:700;color:var(--gold);">
-                    {{ $service->price > 0 ? $service->currency . ' ' . number_format($service->price, 2) : ($isAr ? 'مجاني' : 'Free') }}
+                <span class="price-display" data-currency="{{ $service->currency }}" data-lbp-raw="{{ $service->price }}" style="font-weight:700;color:var(--gold);">
+                    @if($service->price > 0)
+                        @if($service->currency === 'LBP')ل.ل {{ number_format($service->price, 0) }}@else{{ $service->currency }} {{ number_format($service->price, 2) }}@endif
+                    @else
+                        {{ $isAr ? 'مجاني' : 'Free' }}
+                    @endif
                 </span>
             </div>
             @if($service->office)
