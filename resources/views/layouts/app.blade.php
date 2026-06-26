@@ -609,7 +609,7 @@
     <div class="topnav-right-cluster">
 
         {{-- Currency Toggle --}}
-        <div class="lang-switch" id="currency-toggle" onclick="toggleCurrency()" title="Switch currency" style="cursor:pointer;">
+        <div class="lang-switch" id="currency-toggle" onclick="toggleCurrency()" title="Switch currency" style="cursor:pointer;direction:ltr;">
             <span id="curr-lbp" class="active">LBP</span>
             <span id="curr-usd">USD</span>
         </div>
@@ -711,17 +711,27 @@ const LBP_RATE = parseFloat(document.querySelector('meta[name="lbp-rate"]')?.con
 
 function applyPriceDisplay(mode) {
     document.querySelectorAll('.price-display').forEach(el => {
-        const lbp = parseFloat(el.dataset.lbpRaw);
-        const cur = el.dataset.currency || 'LBP';
-        if (cur !== 'LBP' || isNaN(lbp)) return; // non-LBP prices stay as-is
-        if (mode === 'usd') {
-            const usd = lbp / LBP_RATE;
-            el.textContent = '$' + usd.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-        } else {
-            el.textContent = 'ل.ل ' + Math.round(lbp).toLocaleString('en-US');
+        const raw = parseFloat(el.dataset.lbpRaw);
+        const cur = (el.dataset.currency || 'LBP').toUpperCase();
+        if (isNaN(raw) || raw <= 0) return;
+
+        if (cur === 'LBP') {
+            if (mode === 'usd') {
+                const usd = raw / LBP_RATE;
+                el.textContent = '$' + usd.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+            } else {
+                el.textContent = 'ل.ل ' + Math.round(raw).toLocaleString('en-US');
+            }
+        } else if (cur === 'USD') {
+            if (mode === 'lbp') {
+                const lbp = raw * LBP_RATE;
+                el.textContent = 'ل.ل ' + Math.round(lbp).toLocaleString('en-US');
+            } else {
+                el.textContent = '$' + raw.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+            }
         }
     });
-    // toggle button active state
+
     document.getElementById('curr-lbp')?.classList.toggle('active', mode === 'lbp');
     document.getElementById('curr-usd')?.classList.toggle('active', mode === 'usd');
 }
