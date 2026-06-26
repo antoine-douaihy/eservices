@@ -197,7 +197,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'role:admin,office'])->prefix('office')->group(function () {
     Route::get('/dashboard', function (Request $request) {
         $user  = Auth::user();
-        $query = \App\Models\CitizenRequest::with(['user', 'service', 'office', 'localPayments', 'cryptoTransactions'])
+        $query = \App\Models\CitizenRequest::with(['user', 'service', 'office', 'localPayments', 'cryptoTransactions', 'messages'])
             ->latest();
 
         // Office staff only see requests for their own office

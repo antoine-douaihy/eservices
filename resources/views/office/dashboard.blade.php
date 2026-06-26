@@ -269,9 +269,10 @@
                                 <a href="{{ route('office.requests.chat', $req) }}" class="btn-ghost"
                                    style="padding:0.3rem 0.6rem;font-size:0.78rem;" title="Chat with citizen">
                                     <i class="bi bi-chat-text"></i>
-                                    @if($req->messages_count ?? $req->messages->count())
+                                    @php $msgCount = $req->messages_count ?? ($req->relationLoaded('messages') ? $req->messages->count() : 0); @endphp
+                                    @if($msgCount)
                                         <span style="background:rgba(214,158,46,0.3);border-radius:20px;padding:0 5px;font-size:0.68rem;color:var(--gold);">
-                                            {{ $req->messages->count() }}
+                                            {{ $msgCount }}
                                         </span>
                                     @endif
                                 </a>
