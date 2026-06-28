@@ -42,10 +42,6 @@
     }
     .wf-step.active .wf-step-detail { display:block; }
     .wf-chevron { margin-left:auto; color:var(--muted); transition:transform 0.2s; }
-    /* Step number shown as fallback when Bootstrap Icons font is unavailable */
-    .wf-step-num { display:none; font-weight:800; font-size:1.1rem; line-height:1; }
-    .no-bi-icons .wf-step-num { display:inline; }
-    .no-bi-icons .wf-step-icon i { display:none; }
     .wf-step.active .wf-chevron { transform:rotate(90deg); }
 
     .wf-services-card { max-width:760px; margin:0 auto; background:#fff; border:1px solid var(--border); border-radius:16px; padding:1.75rem; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
@@ -68,7 +64,7 @@
     <div class="wf-tree" id="wfTree">
 
         <div class="wf-step active" data-step="1">
-            <div class="wf-step-icon" style="background:#dbeafe;color:#1d4ed8;" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-search" style="font-size:1.2rem;"></i><span class="wf-step-num">1</span></div>
+            <div class="wf-step-icon" style="background:#dbeafe;color:#1d4ed8;" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-search"></i></div>
             <div class="wf-step-body">
                 <div class="wf-step-title">{{ $isAr ? '1. تصفح واختر خدمة' : '1. Browse & Select a Service' }} <i class="bi bi-chevron-right wf-chevron"></i></div>
                 <div class="wf-step-sub">{{ $isAr ? 'ابحث في دليل الخدمات' : 'Search the service catalog' }}</div>
@@ -77,7 +73,7 @@
         </div>
 
         <div class="wf-step" data-step="2">
-            <div class="wf-step-icon" style="background:#fef3c7;color:var(--gold);" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-pencil-square" style="font-size:1.2rem;"></i><span class="wf-step-num">2</span></div>
+            <div class="wf-step-icon" style="background:#fef3c7;color:var(--gold);" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-pencil-square"></i></div>
             <div class="wf-step-body">
                 <div class="wf-step-title">{{ $isAr ? '2. التقديم وتحميل المستندات' : '2. Apply & Upload Documents' }} <i class="bi bi-chevron-right wf-chevron"></i></div>
                 <div class="wf-step-sub">{{ $isAr ? 'أدخل بياناتك وحمّل ما هو مطلوب' : 'Fill in your details, upload what\'s required' }}</div>
@@ -86,7 +82,7 @@
         </div>
 
         <div class="wf-step" data-step="3">
-            <div class="wf-step-icon" style="background:#d1fae5;color:#047857;" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-credit-card-fill" style="font-size:1.2rem;"></i><span class="wf-step-num">3</span></div>
+            <div class="wf-step-icon" style="background:#d1fae5;color:#047857;" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-credit-card-fill"></i></div>
             <div class="wf-step-body">
                 <div class="wf-step-title">{{ $isAr ? '3. الدفع (إذا كانت الخدمة مدفوعة)' : '3. Payment (if the service has a fee)' }} <i class="bi bi-chevron-right wf-chevron"></i></div>
                 <div class="wf-step-sub">{{ $isAr ? 'بطاقة ائتمان أو عملة مشفرة' : 'Card or cryptocurrency' }}</div>
@@ -95,7 +91,7 @@
         </div>
 
         <div class="wf-step" data-step="4">
-            <div class="wf-step-icon" style="background:#ede9fe;color:#5b21b6;" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-people-fill" style="font-size:1.2rem;"></i><span class="wf-step-num">4</span></div>
+            <div class="wf-step-icon" style="background:#ede9fe;color:#5b21b6;" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-people-fill"></i></div>
             <div class="wf-step-body">
                 <div class="wf-step-title">{{ $isAr ? '4. مراجعة الدائرة' : '4. Office Review' }} <i class="bi bi-chevron-right wf-chevron"></i></div>
                 <div class="wf-step-sub">{{ $isAr ? 'يتحقق الموظفون من طلبك' : 'Staff verify your request' }}</div>
@@ -104,7 +100,7 @@
         </div>
 
         <div class="wf-step" data-step="5">
-            <div class="wf-step-icon" style="background:#fee2e2;color:#991b1b;" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-signpost-split-fill" style="font-size:1.2rem;"></i><span class="wf-step-num">5</span></div>
+            <div class="wf-step-icon" style="background:#fee2e2;color:#991b1b;" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-signpost-split-fill"></i></div>
             <div class="wf-step-body">
                 <div class="wf-step-title">{{ $isAr ? '5. القرار' : '5. The Decision' }} <i class="bi bi-chevron-right wf-chevron"></i></div>
                 <div class="wf-step-sub">{{ $isAr ? 'مقبول، مستندات ناقصة، أو مرفوض' : 'Approved, missing documents, or declined' }}</div>
@@ -118,7 +114,7 @@
         </div>
 
         <div class="wf-step" data-step="6">
-            <div class="wf-step-icon" style="background:#fef3c7;color:var(--gold);" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-patch-check-fill" style="font-size:1.2rem;"></i><span class="wf-step-num">6</span></div>
+            <div class="wf-step-icon" style="background:#fef3c7;color:var(--gold);" title="{{ $isAr ? 'انقر للتفاصيل' : 'Click for details' }}"><i class="bi bi-patch-check-fill"></i></div>
             <div class="wf-step-body">
                 <div class="wf-step-title">{{ $isAr ? '6. الشهادة والتتبع' : '6. Certificate & Tracking' }} <i class="bi bi-chevron-right wf-chevron"></i></div>
                 <div class="wf-step-sub">{{ $isAr ? 'تحميل الشهادة وتتبعها برمز QR' : 'Download your certificate, track anytime with a QR code' }}</div>
@@ -182,17 +178,6 @@
 
 @push('scripts')
 <script>
-// Detect if Bootstrap Icons font loaded; if not, show step numbers instead
-(function() {
-    var testEl = document.createElement('i');
-    testEl.className = 'bi bi-search';
-    testEl.style.cssText = 'position:absolute;visibility:hidden;font-family:bootstrap-icons';
-    document.body.appendChild(testEl);
-    var w = testEl.getBoundingClientRect().width;
-    document.body.removeChild(testEl);
-    if (w < 1) document.documentElement.classList.add('no-bi-icons');
-})();
-
 document.querySelectorAll('#wfTree .wf-step').forEach(step => {
     step.addEventListener('click', () => step.classList.toggle('active'));
 });
