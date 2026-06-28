@@ -16,11 +16,28 @@ class TotpSetupController extends Controller
         $user      = Auth::user();
         $google2fa = new Google2FA();
 
-        if (!session()->has('2fa:setup_secret')) {
-            $secret = $google2fa->generateSecretKey();
-            session(['2fa:setup_secret' => $secret]);
+        // If they already have a pending (disabled) secret saved, reuse it
+        // so refreshing the page doesn't generate a new QR.
+        // If 2FA is already fully enabled, generate a fresh secret for re-enrollment.
+        $existingSecret = DB::table('users')
+            ->where('id', $user->id)
+            ->value('two_factor_secret');
+
+        $alreadyEnabled = DB::table('users')
+            ->where('id', $user->id)
+            ->value('two_factor_enabled');
+
+        if ($existingSecret && !$alreadyEnabled) {
+            // Reuse the pending secret
+            $secret = $existingSecret;
         } else {
-            $secret = session('2fa:setup_secret');
+            // Generate fresh secret and save it immediately (disabled until confirmed)
+            $secret = $google2fa->generateSecretKey();
+            DB::table('users')->where('id', $user->id)->update([
+                'two_factor_secret'  => $secret,
+                'two_factor_enabled' => 0,
+                'updated_at'         => now(),
+            ]);
         }
 
         $qrCodeUrl = $google2fa->getQRCodeUrl(
@@ -39,25 +56,24 @@ class TotpSetupController extends Controller
         $request->validate(['code' => 'required|digits:6']);
 
         $google2fa = new Google2FA();
-        $secret    = session('2fa:setup_secret');
+
+        // Read secret directly from DB — no session dependency
+        $secret = DB::table('users')->where('id', Auth::id())->value('two_factor_secret');
 
         if (!$secret) {
             return redirect()->route('2fa.setup')
-                ->withErrors(['code' => 'Session expired. Please scan the QR code again.']);
+                ->withErrors(['code' => 'No secret found. Please scan the QR code again.']);
         }
 
         if (!$google2fa->verifyKey($secret, $request->code, 4)) {
             return back()->withErrors(['code' => 'Code did not match. Please try again.']);
         }
 
-        // Use raw DB update to bypass any Eloquent model caching or cast issues
+        // Secret verified — activate 2FA
         DB::table('users')->where('id', Auth::id())->update([
-            'two_factor_secret'  => $secret,
             'two_factor_enabled' => 1,
             'updated_at'         => now(),
         ]);
-
-        session()->forget('2fa:setup_secret');
 
         return redirect()->route('home')
             ->with('status', 'Two-factor authentication has been enabled on your account.');
