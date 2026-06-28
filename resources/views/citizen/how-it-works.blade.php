@@ -31,7 +31,7 @@
         border:3px solid #fff; box-shadow:0 0 0 1px var(--border); transition:transform 0.2s, box-shadow 0.2s;
         background:#fff; cursor:pointer; user-select:none;
     }
-    .wf-step:hover .wf-step-icon { box-shadow:0 0 0 3px rgba(var(--gold-rgb,180,140,30),0.45); transform:scale(1.06); }
+    .wf-step:hover .wf-step-icon { box-shadow:0 0 0 3px rgba(214,158,46,0.45); transform:scale(1.06); }
     .wf-step.active .wf-step-icon { transform:scale(1.08); box-shadow:0 0 0 3px var(--gold); }
     .wf-step-body { flex:1; padding-top:0.4rem; }
     .wf-step-title { font-family:'Syne',sans-serif; font-weight:700; font-size:1.05rem; color:var(--navy); margin-bottom:0.25rem; display:flex; align-items:center; gap:0.5rem; }
@@ -178,8 +178,12 @@
 
 @push('scripts')
 <script>
-document.querySelectorAll('#wfTree .wf-step').forEach(step => {
-    step.addEventListener('click', () => step.classList.toggle('active'));
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('#wfTree .wf-step').forEach(function (step) {
+        step.addEventListener('click', function () {
+            step.classList.toggle('active');
+        });
+    });
 });
 
 const wfSelect = document.getElementById('wfServiceSelect');
