@@ -28,18 +28,17 @@ class TwoFactorController extends Controller
         $request->validate(['code' => 'required|string|min:6|max:6']);
         $user = User::findOrFail(session('2fa:user_id'));
 
-        // 1. First, check if the code matches the Email Code (if one was sent)
+        // 1. Check email code first (if one was sent)
         $isEmailValid = $user->two_factor_email_code === $request->code
             && $user->two_factor_code_expires_at
             && now()->lessThan($user->two_factor_code_expires_at);
 
         if ($isEmailValid) {
             $valid = true;
-        }
-        // 2. If it's not an email code, check if it's a TOTP code (if they have a secret)
-        elseif ($user->two_factor_secret) {
+        } elseif ($user->two_factor_secret) {
+            // 2. Check TOTP code — window=4 allows ±2 min clock drift
             $google2fa = new Google2FA();
-            $valid = $google2fa->verifyKey($user->two_factor_secret, $request->code);
+            $valid = $google2fa->verifyKey($user->two_factor_secret, $request->code, 4);
         } else {
             $valid = false;
         }
@@ -56,6 +55,7 @@ class TwoFactorController extends Controller
 
         session()->forget('2fa:user_id');
         Auth::login($user);
+        session(['2fa:verified' => true]);
 
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
@@ -96,7 +96,6 @@ class TwoFactorController extends Controller
             'two_factor_code_expires_at' => now()->addMinutes(10),
         ]);
 
-        // Send the code via email
         Mail::raw(
             "Your verification code is: {$code}\n\nThis code expires in 10 minutes.\n\nIf you did not request this, please ignore this email.",
             function ($message) use ($user) {

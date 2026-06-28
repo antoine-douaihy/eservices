@@ -58,12 +58,13 @@ class GoogleController extends Controller
             ]);
         }
 
-        // If 2FA is enabled, intercept and require the code before fully logging in
+        // If 2FA is enabled (TOTP), intercept before logging in
         if ($user->two_factor_enabled && $user->two_factor_secret) {
             session(['2fa:user_id' => $user->id]);
             return redirect()->route('2fa.challenge');
         }
 
+        // If 2FA is enabled (email code), send code then intercept
         if ($user->two_factor_enabled) {
             session(['2fa:user_id' => $user->id]);
             TwoFactorController::sendEmailCode($user);

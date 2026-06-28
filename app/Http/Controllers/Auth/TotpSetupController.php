@@ -17,7 +17,7 @@ class TotpSetupController extends Controller
         $google2fa = new Google2FA();
 
         // If they already have a pending (disabled) secret saved, reuse it
-        // so refreshing the page doesn't generate a new QR.
+        // so refreshing the page does not generate a new QR.
         // If 2FA is already fully enabled, generate a fresh secret for re-enrollment.
         $existingSecret = DB::table('users')
             ->where('id', $user->id)
@@ -74,6 +74,16 @@ class TotpSetupController extends Controller
             'two_factor_enabled' => 1,
             'updated_at'         => now(),
         ]);
+
+        // Cycle the remember token so any existing "remember me" cookie is invalidated.
+        // Next login via that cookie will require going through the 2FA challenge.
+        DB::table('users')->where('id', Auth::id())->update([
+            'remember_token' => \Illuminate\Support\Str::random(60),
+        ]);
+
+        // Mark this session as already 2FA-verified so the middleware does not bounce
+        // the user out of the very page they just completed setup on.
+        session(['2fa:verified' => true]);
 
         return redirect()->route('home')
             ->with('status', 'Two-factor authentication has been enabled on your account.');
