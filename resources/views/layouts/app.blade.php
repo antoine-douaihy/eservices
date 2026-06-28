@@ -415,6 +415,9 @@
             .app-topnav { padding: 0 1rem; }
             .content-area, .content-area-guest { padding: 1.1rem; }
             .btn-menu-toggle { display: flex; }
+            /* Lock the left group to exactly the hamburger button so the right
+               cluster cannot squash it to zero and hide the button via overflow:hidden */
+            .topnav-title-group { flex: 0 0 46px; min-width: 46px; overflow: visible; }
             .notif-panel,
             html[dir="rtl"] .notif-panel {
                 position: fixed !important;

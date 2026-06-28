@@ -65,7 +65,7 @@ class TotpSetupController extends Controller
                 ->withErrors(['code' => 'No secret found. Please scan the QR code again.']);
         }
 
-        if (!$google2fa->verifyKey($secret, $request->code, 4)) {
+        if (!$google2fa->verifyKey($secret, $request->code, 8)) {
             return back()->withErrors(['code' => 'Code did not match. Please try again.']);
         }
 

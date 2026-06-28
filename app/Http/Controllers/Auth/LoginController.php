@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -41,7 +42,15 @@ class LoginController extends Controller
         if ($user->two_factor_enabled) {
             Auth::logout();
             session(['2fa:user_id' => $user->id]);
-            TwoFactorController::sendEmailCode($user);
+            // Wrap in try-catch: if mail isn't configured the user still reaches
+            // the challenge page and can use "Send code to email" to retry.
+            try {
+                TwoFactorController::sendEmailCode($user);
+            } catch (\Exception $e) {
+                Log::error('2FA email send failed during login: ' . $e->getMessage(), [
+                    'user_id' => $user->id,
+                ]);
+            }
             return redirect()->route('2fa.challenge');
         }
 
