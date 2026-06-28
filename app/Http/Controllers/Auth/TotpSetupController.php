@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use PragmaRX\Google2FA\Google2FA;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -49,9 +50,11 @@ class TotpSetupController extends Controller
             return back()->withErrors(['code' => 'Code did not match. Please try again.']);
         }
 
-        Auth::user()->update([
+        // Use raw DB update to bypass any Eloquent model caching or cast issues
+        DB::table('users')->where('id', Auth::id())->update([
             'two_factor_secret'  => $secret,
-            'two_factor_enabled' => true,
+            'two_factor_enabled' => 1,
+            'updated_at'         => now(),
         ]);
 
         session()->forget('2fa:setup_secret');
