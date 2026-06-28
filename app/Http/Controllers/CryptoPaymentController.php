@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\CitizenRequest;
 use App\Models\CryptoTransaction;
+use App\Models\Setting;
 use App\Support\LaravelRequest as Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -20,7 +19,6 @@ class CryptoPaymentController extends Controller
             return Redirect::route('login');
         }
 
-        $prices      = $this->fetchCryptoPrices();
         $transaction = $citizenRequest->cryptoTransactions()
             ->where('status', 'pending')
             ->where('expires_at', '>', now())
@@ -31,12 +29,10 @@ class CryptoPaymentController extends Controller
         if ($transaction) {
             try {
                 $qrSvg = QrCode::format('svg')->size(180)->generate($transaction->wallet_address);
-            } catch (\Exception $e) {
-                // leave null; view falls back to external API
-            }
+            } catch (\Exception $e) {}
         }
 
-        return View::make('crypto.payment', compact('citizenRequest', 'prices', 'transaction', 'qrSvg'));
+        return View::make('crypto.payment', compact('citizenRequest', 'transaction', 'qrSvg'));
     }
 
     public function initiate(Request $request, CitizenRequest $citizenRequest)
@@ -45,32 +41,27 @@ class CryptoPaymentController extends Controller
             return Redirect::route('login');
         }
 
-        $request->validate(['currency' => 'required|in:BTC,ETH']);
+        $service   = $citizenRequest->service;
+        $amountUsd = $service->currency === 'LBP'
+            ? round($service->price / (float) Setting::get('lbp_usd_rate', 89500), 2)
+            : round((float) $service->price, 2);
 
-        $prices     = $this->fetchCryptoPrices();
-        $currency   = $request->input('currency');
-        $priceUsd   = $prices[$currency];
-        $amountUsd  = $citizenRequest->service->price;
-        $amountCrypto = round($amountUsd / $priceUsd, 8);
+        $wallet = Setting::get('usdt_wallet', '');
 
-        $wallet = $currency === 'BTC'
-            ? Config::get('services.crypto.btc_wallet')
-            : Config::get('services.crypto.eth_wallet');
-
-        // Expire any existing pending transactions for this request
+        // Expire any existing pending transactions
         $citizenRequest->cryptoTransactions()
             ->where('status', 'pending')
             ->update(['status' => 'expired']);
 
         CryptoTransaction::create([
             'citizen_request_id' => $citizenRequest->id,
-            'currency'           => $currency,
+            'currency'           => 'USDT',
             'amount_usd'         => $amountUsd,
-            'amount_crypto'      => $amountCrypto,
-            'crypto_price_usd'   => $priceUsd,
+            'amount_crypto'      => $amountUsd,   // USDT is 1:1 with USD
+            'crypto_price_usd'   => 1.00,
             'wallet_address'     => $wallet,
             'status'             => 'pending',
-            'expires_at'         => now()->addMinutes(30),
+            'expires_at'         => now()->addHours(24),
         ]);
 
         return Redirect::route('crypto.payment', $citizenRequest);
@@ -85,15 +76,14 @@ class CryptoPaymentController extends Controller
         if ($transaction->status !== 'pending') {
             $message = match ($transaction->status) {
                 'confirmed' => 'This transaction has already been submitted.',
-                'expired'   => 'This payment request has expired. Please refresh the rate and try again.',
-                default     => 'This transaction is no longer valid. Please start a new payment.',
+                'expired'   => 'This payment request has expired. Please generate a new one.',
+                default     => 'This transaction is no longer valid.',
             };
-
             return Redirect::back()->withInput()->with('error', $message);
         }
 
         $request->validate([
-            'tx_hash' => 'required|string|min:10|max:100',
+            'tx_hash' => 'required|string|min:10|max:150',
         ]);
 
         $transaction->update([
@@ -107,7 +97,6 @@ class CryptoPaymentController extends Controller
             'status'         => 'in_review',
         ]);
 
-        // Update linked ServiceApplication status to reviewing
         if ($transaction->citizenRequest->serviceApplication) {
             $transaction->citizenRequest->serviceApplication->update(['status' => 'reviewing']);
         }
@@ -119,26 +108,6 @@ class CryptoPaymentController extends Controller
         } catch (\Exception $e) {}
 
         return Redirect::route('citizen.my-requests')
-            ->with('success', 'Payment submitted. Your transaction hash has been recorded and is under review.');
-    }
-
-    private function fetchCryptoPrices(): array
-    {
-        try {
-            $response = Http::timeout(5)->get('https://api.coingecko.com/api/v3/simple/price', [
-                'ids'           => 'bitcoin,ethereum',
-                'vs_currencies' => 'usd',
-            ]);
-
-            $data = $response->json();
-
-            return [
-                'BTC' => $data['bitcoin']['usd'] ?? 0,
-                'ETH' => $data['ethereum']['usd'] ?? 0,
-            ];
-        } catch (\Exception $e) {
-            // Fallback prices if the API is unreachable, so payment isn't blocked
-            return ['BTC' => 60000, 'ETH' => 3000];
-        }
+            ->with('success', 'Payment submitted. Your TXID has been recorded and is under review.');
     }
 }

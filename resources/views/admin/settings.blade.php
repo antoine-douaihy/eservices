@@ -64,6 +64,34 @@
             </div>
         </div>
 
+        {{-- USDT Wallet Address --}}
+        <div class="admin-card mb-4">
+            <div style="padding:1.5rem 1.75rem;border-bottom:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.25rem;">
+                    <i class="bi bi-wallet2" style="color:var(--gold);"></i>
+                    <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#fff;">USDT Wallet Address</span>
+                </div>
+                <p style="color:var(--muted);font-size:0.83rem;margin:0;">
+                    The wallet address citizens send USDT to when paying with cryptocurrency.
+                </p>
+            </div>
+            <div style="padding:1.5rem 1.75rem;">
+                <label class="form-label-custom">USDT Wallet Address (TRC-20 / ERC-20)</label>
+                <input type="text"
+                       name="usdt_wallet"
+                       value="{{ old('usdt_wallet', $usdtWallet) }}"
+                       class="form-control-custom"
+                       style="font-family:monospace;font-size:0.85rem;"
+                       placeholder="e.g. TRx7NqTHkMBpvVkALRKhkNXdFUPcmEzDpM">
+                @error('usdt_wallet')
+                    <div style="color:#f87171;font-size:0.8rem;margin-top:6px;"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                @enderror
+                <p style="color:var(--muted);font-size:0.78rem;margin-top:0.5rem;">
+                    <i class="bi bi-info-circle me-1"></i>Make sure citizens know which network to use (TRC-20 is recommended for low fees).
+                </p>
+            </div>
+        </div>
+
         <div class="d-flex gap-3">
             <button type="submit" class="btn-gold">
                 <i class="bi bi-floppy-fill"></i> Save Settings
