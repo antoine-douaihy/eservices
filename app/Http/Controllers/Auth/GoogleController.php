@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\Auth\TwoFactorController;
 
 class GoogleController extends Controller
 {
@@ -57,7 +58,19 @@ class GoogleController extends Controller
             ]);
         }
 
-        // Log the user in (true = remember me)
+        // If 2FA is enabled, intercept and require the code before fully logging in
+        if ($user->two_factor_enabled && $user->two_factor_secret) {
+            session(['2fa:user_id' => $user->id]);
+            return redirect()->route('2fa.challenge');
+        }
+
+        if ($user->two_factor_enabled) {
+            session(['2fa:user_id' => $user->id]);
+            TwoFactorController::sendEmailCode($user);
+            return redirect()->route('2fa.challenge');
+        }
+
+        // No 2FA — log straight in
         Auth::login($user, true);
 
         return redirect()->intended('/dashboard');
