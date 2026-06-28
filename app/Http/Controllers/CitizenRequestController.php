@@ -202,7 +202,7 @@ class CitizenRequestController extends Controller
             try {
                 $citizenRequest->update(['approved_at' => now()]);
                 $pdfGenerator = app(\App\Services\PdfGenerator::class);
-                $pdf      = $pdfGenerator->loadView('pdf.certificate', ['request' => $citizenRequest->fresh()->load('service','office','user')]);
+                $pdf      = $pdfGenerator->loadView('pdf.certificate', ['request' => $citizenRequest->fresh()->load('service','office.municipality','user')]);
                 $filename = 'certificate_' . $citizenRequest->id . '_' . time() . '.pdf';
                 \Illuminate\Support\Facades\Storage::disk('public')->put('certificates/' . $filename, $pdf->output());
                 $citizenRequest->update(['certificate_path' => 'certificates/' . $filename]);
@@ -278,7 +278,7 @@ class CitizenRequestController extends Controller
 
         $citizenRequest->logHistory('approved', Auth::id());
 
-        $pdf      = $pdfGenerator->loadView('pdf.certificate', ['request' => $citizenRequest]);
+        $pdf      = $pdfGenerator->loadView('pdf.certificate', ['request' => $citizenRequest->load('service','office.municipality','user')]);
         $filename = 'certificate_' . $citizenRequest->id . '_' . time() . '.pdf';
 
         // Write via the Storage facade (not a raw filesystem path) so this
@@ -344,7 +344,7 @@ class CitizenRequestController extends Controller
                 $cr->logHistory('approved', Auth::id(), 'Bulk approval');
 
                 try {
-                    $pdf      = $pdfGenerator->loadView('pdf.certificate', ['request' => $cr]);
+                    $pdf      = $pdfGenerator->loadView('pdf.certificate', ['request' => $cr->load('service','office.municipality','user')]);
                     $filename = 'certificate_' . $cr->id . '_' . time() . '.pdf';
                     Storage::disk('public')->put('certificates/' . $filename, $pdf->output());
                     $cr->update(['certificate_path' => 'certificates/' . $filename]);
@@ -374,7 +374,7 @@ class CitizenRequestController extends Controller
             return Redirect::route('login');
         }
 
-        $pdf      = $pdfGenerator->loadView('pdf.certificate', ['request' => $citizenRequest]);
+        $pdf      = $pdfGenerator->loadView('pdf.certificate', ['request' => $citizenRequest->load('service','office.municipality','user')]);
         $filename = 'Certificate_' . $citizenRequest->user->first_name . '_' . $citizenRequest->id . '.pdf';
         return $pdf->download($filename);
     }

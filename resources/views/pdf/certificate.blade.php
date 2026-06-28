@@ -11,45 +11,44 @@
             background: #fff;
             color: #0d1f3c;
             width: 210mm;
-            height: 297mm;
         }
 
         .page {
             width: 210mm;
-            height: 297mm;
             padding: 11mm;
         }
 
         /* ── OUTER FRAME ── */
         .outer-frame {
             border: 3.5px solid #0d1f3c;
-            height: 100%;
             width: 100%;
         }
         .gold-frame {
             border: 1.5px solid #d69e2e;
-            height: 100%;
             margin: 4px;
-            display: table;
             width: calc(100% - 8px);
         }
 
         /* ── HEADER BANNER ── */
         .header-banner {
             background: #0d1f3c;
-            padding: 26px 40px 22px;
+            padding: 22px 40px 18px;
             text-align: center;
         }
         .header-eyebrow {
             font-size: 8px; letter-spacing: 6px; text-transform: uppercase;
-            color: #d69e2e; margin-bottom: 6px;
+            color: #d69e2e; margin-bottom: 4px;
         }
         .header-title {
-            font-size: 27px; font-weight: bold; color: #ffffff; letter-spacing: 2px;
+            font-size: 26px; font-weight: bold; color: #ffffff; letter-spacing: 2px;
+        }
+        .header-city {
+            font-size: 11px; color: #d69e2e; letter-spacing: 3px;
+            text-transform: uppercase; margin-top: 5px; font-weight: bold;
         }
         .header-sub {
             font-size: 8px; color: rgba(255,255,255,0.4); letter-spacing: 4px;
-            text-transform: uppercase; margin-top: 5px;
+            text-transform: uppercase; margin-top: 4px;
         }
 
         /* ── GOLD STRIPE ── */
@@ -59,46 +58,46 @@
         .title-band {
             background: #f7f3ea;
             text-align: center;
-            padding: 20px 0 17px;
+            padding: 16px 0 14px;
         }
         .cert-title {
-            font-size: 19px; font-weight: bold; color: #0d1f3c;
-            letter-spacing: 8px; text-transform: uppercase;
+            font-size: 18px; font-weight: bold; color: #0d1f3c;
+            letter-spacing: 7px; text-transform: uppercase;
         }
         .cert-subtitle {
-            font-size: 8.5px; color: #d69e2e; letter-spacing: 3px;
-            text-transform: uppercase; margin-top: 5px;
+            font-size: 8px; color: #d69e2e; letter-spacing: 3px;
+            text-transform: uppercase; margin-top: 4px;
         }
 
         /* ── BODY ── */
         .body-section {
-            padding: 32px 52px 28px;
+            padding: 24px 52px 20px;
             text-align: center;
         }
         .certifies-text {
             font-size: 10px; color: #999; letter-spacing: 3px;
-            text-transform: uppercase; margin-bottom: 14px;
+            text-transform: uppercase; margin-bottom: 12px;
         }
         .citizen-name {
-            font-size: 30px; font-weight: bold; color: #0d1f3c;
-            letter-spacing: 1px; padding: 5px 30px 11px;
+            font-size: 28px; font-weight: bold; color: #0d1f3c;
+            letter-spacing: 1px; padding: 4px 30px 10px;
             border-bottom: 3px solid #d69e2e; display: inline-block;
         }
         .completed-text {
-            font-size: 11.5px; color: #555; margin: 20px 0 12px; line-height: 1.8;
+            font-size: 11px; color: #555; margin: 16px 0 10px; line-height: 1.8;
         }
         .service-badge {
-            font-size: 15px; font-weight: bold; color: #047857;
+            font-size: 14px; font-weight: bold; color: #047857;
             background: rgba(4,120,87,0.08); border: 1.5px solid rgba(4,120,87,0.3);
-            border-radius: 5px; display: inline-block; padding: 7px 28px; margin: 4px 0 14px;
+            border-radius: 5px; display: inline-block; padding: 6px 24px; margin: 4px 0 10px;
         }
-        .office-ref { font-size: 10.5px; color: #aaa; }
+        .office-ref { font-size: 10px; color: #aaa; }
 
         /* ── DETAILS TABLE ── */
-        .details-wrap { padding: 24px 48px 20px; }
-        .details { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+        .details-wrap { padding: 18px 48px 16px; }
+        .details { width: 100%; border-collapse: collapse; font-size: 11px; }
         .details td {
-            padding: 11px 14px;
+            padding: 9px 14px;
             color: #374151;
         }
         .details tr:nth-child(even) td { background: #f9fafb; }
@@ -108,38 +107,38 @@
         }
 
         /* ── SIGNATURES ── */
-        .footer-section { padding: 24px 48px 28px; }
+        .footer-section { padding: 18px 48px 22px; }
         .sig-table { width: 100%; border-collapse: collapse; }
         .sig-table td { width: 33%; text-align: center; vertical-align: bottom; padding: 0 8px; }
         .sig-line {
             border-top: 1px solid #0d1f3c; margin: 0 auto;
-            width: 120px; margin-top: 50px;
+            width: 110px; margin-top: 44px;
         }
-        .sig-label { font-size: 9.5px; color: #999; margin-top: 6px; }
-        .sig-name { font-size: 10.5px; font-weight: bold; color: #0d1f3c; margin-top: 3px; }
+        .sig-label { font-size: 9px; color: #999; margin-top: 5px; }
+        .sig-name { font-size: 10px; font-weight: bold; color: #0d1f3c; margin-top: 3px; }
 
         /* ── STAMP ── */
         .stamp-outer {
-            width: 86px; height: 86px;
+            width: 80px; height: 80px;
             border: 3px solid #0d1f3c; border-radius: 50%;
-            display: inline-block; text-align: center; padding-top: 10px;
+            display: inline-block; text-align: center; padding-top: 8px;
         }
         .stamp-inner {
-            width: 72px; height: 72px;
+            width: 66px; height: 66px;
             border: 1px dashed #d69e2e; border-radius: 50%;
-            display: inline-block; padding-top: 12px;
+            display: inline-block; padding-top: 10px;
         }
         .stamp-text {
-            font-size: 7.5px; font-weight: bold; color: #0d1f3c;
+            font-size: 7px; font-weight: bold; color: #0d1f3c;
             letter-spacing: 0.8px; text-transform: uppercase; line-height: 1.8;
         }
 
         /* ── FOOTER BAR ── */
         .footer-bar {
-            background: #0d1f3c; padding: 10px 20px; text-align: center;
+            background: #0d1f3c; padding: 9px 20px; text-align: center;
         }
         .cert-hash {
-            font-size: 8px; color: rgba(214,158,46,0.7); letter-spacing: 0.8px;
+            font-size: 7.5px; color: rgba(214,158,46,0.7); letter-spacing: 0.8px;
         }
     </style>
 </head>
@@ -148,10 +147,21 @@
     <div class="outer-frame">
         <div class="gold-frame">
 
+            @php
+                $officeName = $request->office->name ?? 'Government Office';
+                $city       = $request->office->city
+                           ?? $request->office->municipality->name
+                           ?? null;
+                $displayLocation = $city ? $officeName . ' — ' . $city : $officeName;
+            @endphp
+
             {{-- ── HEADER ── --}}
             <div class="header-banner">
                 <div class="header-eyebrow">Lebanese Republic</div>
                 <div class="header-title">E-Services Platform</div>
+                @if($city)
+                <div class="header-city">{{ $city }} Municipal Services</div>
+                @endif
                 <div class="header-sub">Digital Government Services</div>
             </div>
 
@@ -175,7 +185,7 @@
                 </div>
                 <div class="service-badge">{{ $request->service->name }}</div>
                 <div class="office-ref">
-                    through the E-Services Platform &mdash; {{ $request->office->name }}
+                    through the E-Services Platform &mdash; {{ $displayLocation }}
                 </div>
             </div>
 
@@ -200,12 +210,18 @@
                     </tr>
                     <tr>
                         <td class="lbl">Issuing Office</td>
-                        <td>{{ $request->office->name }}{{ $request->office->city ? ', '.$request->office->city : '' }}</td>
+                        <td>{{ $displayLocation }}</td>
                     </tr>
+                    @if($city)
+                    <tr>
+                        <td class="lbl">Municipality</td>
+                        <td>{{ $city }}</td>
+                    </tr>
+                    @endif
                     @if($request->service->price > 0)
                     <tr>
                         <td class="lbl">Amount Paid</td>
-                        <td>{{ number_format($request->service->price, 2) }} {{ $request->service->currency ?? 'USD' }}</td>
+                        <td>{{ number_format($request->service->price, 0) }} {{ $request->service->currency ?? 'LBP' }}</td>
                     </tr>
                     @endif
                     <tr>
@@ -226,12 +242,16 @@
                         <td>
                             <div class="sig-line"></div>
                             <div class="sig-label">Authorized Officer</div>
-                            <div class="sig-name">{{ $request->office->name }}</div>
+                            <div class="sig-name">{{ $officeName }}</div>
                         </td>
                         <td style="text-align:center;">
                             <div class="stamp-outer">
                                 <div class="stamp-inner">
-                                    <div class="stamp-text">E-Services<br>Platform<br>OFFICIAL</div>
+                                    <div class="stamp-text">
+                                        {{ $city ?? 'E-Services' }}<br>
+                                        Municipality<br>
+                                        OFFICIAL
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -249,7 +269,7 @@
                 <div class="cert-hash">
                     VERIFICATION CODE: CERT-{{ strtoupper(substr(md5($request->id . $request->approved_at), 0, 16)) }}
                     &nbsp;&nbsp;|&nbsp;&nbsp;
-                    e-services-platform-production.up.railway.app
+                    e-services-production.up.railway.app
                 </div>
             </div>
 
