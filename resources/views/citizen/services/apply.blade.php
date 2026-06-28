@@ -26,7 +26,7 @@
                 {{ $service->display_name }}
             </h2>
             <div style="display:flex;flex-wrap:wrap;gap:0.75rem 1.25rem;font-size:0.92rem;color:var(--muted);min-width:0;">
-                <span style="min-width:0;"><i class="bi bi-building me-1"></i>{{ $service->office->name }}</span>
+                <span style="min-width:0;"><i class="bi bi-geo-alt me-1"></i>All Municipalities</span>
                 <span style="min-width:0;"><i class="bi bi-geo-alt me-1"></i>{{ $service->office->municipality->name ?? '' }}</span>
                 <span style="min-width:0;"><i class="bi bi-clock me-1"></i>~{{ $service->processing_days }} business day{{ $service->processing_days > 1 ? 's' : '' }}</span>
             </div>
@@ -102,7 +102,7 @@
         {{-- Hidden coords filled by JS --}}
         <input type="hidden" name="citizen_lat" id="citizen_lat">
         <input type="hidden" name="citizen_lng" id="citizen_lng">
-        <input type="hidden" name="office_id"   id="selected_office_id" value="{{ $service->office_id }}">
+        <input type="hidden" name="office_id"   id="selected_office_id" value="{{ $officesWithService->first()?->id ?? $service->office_id }}">
 
         {{-- ═══════════ STEP 1 — PERSONAL DETAILS ═══════════ --}}
         <div id="step-1">
@@ -175,60 +175,47 @@
                 </div>
             </div>
 
-            {{-- NEAREST OFFICE SELECTOR --}}
-            <div style="background:#ffffff;border:1px solid var(--border);border-radius:14px;padding:1.75rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+            {{-- MUNICIPALITY SELECTOR --}}
+            <div id="locationBox" data-offices='@json($officesJson ?? [])' style="background:#ffffff;border:1px solid var(--border);border-radius:14px;padding:1.75rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
                 <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
                     <div style="width:36px;height:36px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:9px;display:flex;align-items:center;justify-content:center;">
                         <i class="bi bi-geo-alt-fill" style="color:var(--emerald);font-size:0.9rem;"></i>
                     </div>
                     <div>
-                        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:var(--navy);">{{ __('pages.assigned_office') }}</div>
-                        <div style="font-size:0.92rem;color:var(--muted);">{{ __('pages.assigned_office_sub') }}</div>
+                        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:var(--navy);">Select Your Municipality</div>
+                        <div style="font-size:0.92rem;color:var(--muted);">Choose the municipality closest to you — it will appear on your certificate.</div>
                     </div>
                 </div>
 
-                {{-- Location detection --}}
-                <div id="locationBox" data-offices='@json($officesJson ?? [])' style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:1rem;margin-bottom:1rem;">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <div style="font-size:0.95rem;color:var(--muted);" id="locationStatus">
-                            <i class="bi bi-geo me-1"></i> {{ __('pages.location_not_detected') }}
-                        </div>
-                        <button type="button" onclick="detectLocation()"
-                                style="background:#d1fae5;border:1px solid #6ee7b7;color:#047857;font-size:0.92rem;padding:0.55rem 1.05rem;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:0.4rem;transition:background 0.2s;min-height:44px;"
-                                onmouseover="this.style.background='#a7f3d0'" onmouseout="this.style.background='#d1fae5'">
-                            <i class="bi bi-crosshair2"></i> {{ __('pages.detect_my_location') }}
-                        </button>
-                    </div>
-                    <div id="nearestOfficeResult" style="display:none;margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid #bbf7d0;font-size:0.92rem;color:#047857;">
+                {{-- Municipality dropdown --}}
+                <select id="manual_office_select" required
+                        onchange="document.getElementById('selected_office_id').value = this.value"
+                        style="background:#ffffff;border:1.5px solid var(--border);color:var(--text);border-radius:9px;padding:0.85rem 1.1rem;font-size:1.05rem;width:100%;outline:none;min-height:48px;margin-bottom:0.75rem;">
+                    @foreach($officesWithService as $o)
+                        @php $cityLabel = $o->city ?? ($o->municipality->name ?? $o->name); @endphp
+                        <option value="{{ $o->id }}"
+                                data-lat="{{ $o->latitude }}"
+                                data-lng="{{ $o->longitude }}"
+                                {{ $loop->first ? 'selected' : '' }}>
+                            {{ $cityLabel }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- Optional: auto-detect nearest --}}
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                    <button type="button" onclick="detectLocation()"
+                            style="background:#f0fdf4;border:1px solid #bbf7d0;color:#047857;font-size:0.88rem;padding:0.45rem 0.95rem;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:0.4rem;transition:background 0.2s;"
+                            onmouseover="this.style.background='#d1fae5'" onmouseout="this.style.background='#f0fdf4'">
+                        <i class="bi bi-crosshair2"></i> Detect nearest municipality
+                    </button>
+                    <div id="nearestOfficeResult" style="display:none;font-size:0.88rem;color:#047857;">
                         <i class="bi bi-check-circle-fill me-1"></i>
-                        {{ __('pages.nearest_office') }} <strong id="nearestOfficeName"></strong>
+                        Nearest: <strong id="nearestOfficeName"></strong>
                         <span style="color:var(--muted);" id="nearestOfficeDist"></span>
                     </div>
                 </div>
-
-                {{-- Manual office select --}}
-                <div>
-                    <label style="font-size:0.92rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.5rem;">
-                        {{ __('pages.or_select_office_manually') }}
-                    </label>
-                    <select id="manual_office_select"
-                            onchange="document.getElementById('selected_office_id').value = this.value"
-                            style="background:#ffffff;border:1.5px solid var(--border);color:var(--text);border-radius:9px;padding:0.85rem 1.1rem;font-size:1.05rem;width:100%;outline:none;min-height:48px;">
-                        @foreach($officesWithService as $o)
-                            <option value="{{ $o->id }}"
-                                    data-lat="{{ $o->latitude }}"
-                                    data-lng="{{ $o->longitude }}"
-                                    {{ $service->office_id == $o->id ? 'selected' : '' }}>
-                                {{ $o->name }}{{ $o->address ? ' — ' . $o->address : '' }}
-                            </option>
-                        @endforeach
-                        @if($officesWithService->isEmpty())
-                            <option value="{{ $service->office_id }}" selected>
-                                {{ $service->office->name }}
-                            </option>
-                        @endif
-                    </select>
-                </div>
+            </div
             </div>
 
             <div class="d-flex justify-content-end">

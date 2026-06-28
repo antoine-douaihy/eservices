@@ -120,7 +120,7 @@
 
                     {{-- Meta --}}
                     <div style="display:flex;gap:1rem;margin-bottom:1.25rem;font-size:0.9rem;color:var(--muted);">
-                        <span><i class="bi bi-building me-1"></i>{{ $service->office->name ?? '—' }}</span>
+                        <span><i class="bi bi-geo-alt me-1"></i>{{ __('pages.all_municipalities') }}</span>
                         <span><i class="bi bi-clock me-1"></i>{{ $service->processing_days }} {{ $service->processing_days > 1 ? __('pages.days') : __('pages.day') }}</span>
                     </div>
 

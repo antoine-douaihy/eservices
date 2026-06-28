@@ -69,14 +69,17 @@ class ServiceApplicationController extends Controller
 
         $service->load(['requiredDocuments', 'office.municipality']);
 
+        // Show ALL active offices so the citizen picks their municipality,
+        // regardless of which office the service is formally assigned to.
         $officesWithService = Office::where('is_active', true)
-            ->whereHas('services', fn($q) => $q->where('name', $service->name))
-            ->get(['id', 'name', 'address', 'latitude', 'longitude']);
+            ->with('municipality')
+            ->orderBy('name')
+            ->get(['id', 'name', 'city', 'address', 'latitude', 'longitude', 'municipality_id']);
 
         $officesJson = $officesWithService->map(function($o) {
             return [
                 'id'   => $o->id,
-                'name' => $o->name,
+                'name' => $o->city ?? $o->municipality->name ?? $o->name,
                 'lat'  => $o->latitude,
                 'lng'  => $o->longitude,
             ];

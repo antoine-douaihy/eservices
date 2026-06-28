@@ -27,6 +27,7 @@ return [
     'browse_all_govt_services' => 'تصفح جميع الخدمات الحكومية المتوفرة. قدّم طلبك عبر الإنترنت في دقائق.',
     'search_services_placeholder' => 'بحث عن خدمة (مثل: عقد زواج، تجديد هوية…)',
     'all_offices' => 'جميع الدوائر',
+    'all_municipalities' => 'جميع البلديات',
     'no_services_found' => 'لم يتم العثور على خدمات مطابقة لبحثك.',
     'clear_filters' => 'إزالة الفلاتر',
     'documents_required' => 'المستندات المطلوبة',

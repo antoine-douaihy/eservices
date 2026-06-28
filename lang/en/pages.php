@@ -27,6 +27,7 @@ return [
     'browse_all_govt_services' => 'Browse all available government services. Apply online in minutes.',
     'search_services_placeholder' => 'Search services (e.g. Marriage Certificate, ID Renewal…)',
     'all_offices' => 'All Offices',
+    'all_municipalities' => 'All Municipalities',
     'no_services_found' => 'No services found matching your search.',
     'clear_filters' => 'Clear Filters',
     'documents_required' => 'Documents Required',
