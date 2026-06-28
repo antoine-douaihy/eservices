@@ -25,7 +25,8 @@ class CitizenRequestController extends Controller
             ->latest()
             ->get();
 
-        $services = Service::where('is_active', true)->with('office')->get();
+        $services = Service::where('is_active', true)->with('office')->orderBy('name')->get()
+            ->unique(fn($s) => $s->group_uuid ?? $s->name)->values();
 
         return View::make('home', compact('requests', 'services'));
     }
@@ -34,7 +35,8 @@ class CitizenRequestController extends Controller
     public function create()
     {
         $offices  = Office::all();
-        $services = Service::with('office')->get();
+        $services = Service::where('is_active', true)->with('office')->orderBy('name')->get()
+            ->unique(fn($s) => $s->group_uuid ?? $s->name)->values();
         return View::make('requests.create', compact('offices', 'services'));
     }
 
@@ -104,7 +106,8 @@ class CitizenRequestController extends Controller
         }
 
         $offices  = Office::all();
-        $services = Service::with('office')->get();
+        $services = Service::where('is_active', true)->with('office')->orderBy('name')->get()
+            ->unique(fn($s) => $s->group_uuid ?? $s->name)->values();
         return View::make('requests.resubmit', compact('citizenRequest', 'offices', 'services'));
     }
 
