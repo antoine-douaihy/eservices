@@ -12,11 +12,9 @@ class TotpSetupController extends Controller
 {
     public function setup()
     {
-        $user = Auth::user();
+        $user      = Auth::user();
         $google2fa = new Google2FA();
 
-        // ONLY generate a secret if one doesn't exist in the session yet
-        // This prevents the secret from changing if the page refreshes
         if (!session()->has('2fa:setup_secret')) {
             $secret = $google2fa->generateSecretKey();
             session(['2fa:setup_secret' => $secret]);
@@ -35,15 +33,20 @@ class TotpSetupController extends Controller
         return view('auth.totp-setup', compact('qrCodeUrl', 'secret', 'qrSvg'));
     }
 
-    // Confirm the user scanned it correctly
     public function confirm(Request $request)
     {
         $request->validate(['code' => 'required|digits:6']);
+
         $google2fa = new Google2FA();
         $secret    = session('2fa:setup_secret');
 
+        if (!$secret) {
+            return redirect()->route('2fa.setup')
+                ->withErrors(['code' => 'Session expired. Please scan the QR code again.']);
+        }
+
         if (!$google2fa->verifyKey($secret, $request->code, 4)) {
-            return back()->withErrors(['code' => 'Code did not match. Please scan the QR code again.']);
+            return back()->withErrors(['code' => 'Code did not match. Please try again.']);
         }
 
         Auth::user()->update([
@@ -53,10 +56,7 @@ class TotpSetupController extends Controller
 
         session()->forget('2fa:setup_secret');
 
-        return redirect()->route('home')->with('status', 'Google Authenticator has been enabled for your account!');
-    }
-}rget('2fa:setup_secret');
-
-        return redirect('/dashboard')->with('status', 'Google Authenticator has been enabled for your account!');
+        return redirect()->route('home')
+            ->with('status', 'Two-factor authentication has been enabled on your account.');
     }
 }
