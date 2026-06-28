@@ -203,19 +203,19 @@
                 </select>
 
                 {{-- Optional: auto-detect nearest --}}
-                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-top:0.5rem;">
                     <button type="button" onclick="detectLocation()"
                             style="background:#f0fdf4;border:1px solid #bbf7d0;color:#047857;font-size:0.88rem;padding:0.45rem 0.95rem;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:0.4rem;transition:background 0.2s;"
                             onmouseover="this.style.background='#d1fae5'" onmouseout="this.style.background='#f0fdf4'">
                         <i class="bi bi-crosshair2"></i> Detect nearest municipality
                     </button>
-                    <div id="nearestOfficeResult" style="display:none;font-size:0.88rem;color:#047857;">
-                        <i class="bi bi-check-circle-fill me-1"></i>
-                        Nearest: <strong id="nearestOfficeName"></strong>
-                        <span style="color:var(--muted);" id="nearestOfficeDist"></span>
-                    </div>
+                    <div id="locationStatus" style="font-size:0.85rem;color:var(--muted);"></div>
                 </div>
-            </div
+                <div id="nearestOfficeResult" style="display:none;margin-top:0.5rem;font-size:0.88rem;color:#047857;">
+                    <i class="bi bi-check-circle-fill me-1"></i>
+                    Nearest: <strong id="nearestOfficeName"></strong>
+                    <span style="color:var(--muted);" id="nearestOfficeDist"></span>
+                </div>
             </div>
 
             <div class="d-flex justify-content-end">
