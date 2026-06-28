@@ -187,6 +187,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Citizen: Appointments
     Route::get('/appointments',                                         [\App\Http\Controllers\AppointmentController::class, 'citizenIndex'])->name('citizen.appointments.index');
+    Route::post('/requests/{citizenRequest}/appointments/request',      [\App\Http\Controllers\AppointmentController::class, 'citizenRequest'])->name('citizen.appointments.request');
     Route::post('/appointments/{appointment}/confirm',                  [\App\Http\Controllers\AppointmentController::class, 'citizenConfirm'])->name('citizen.appointments.confirm');
     Route::post('/appointments/{appointment}/cancel',                   [\App\Http\Controllers\AppointmentController::class, 'citizenCancel'])->name('citizen.appointments.cancel');
 });

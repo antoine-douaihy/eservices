@@ -47,7 +47,16 @@ class AppointmentController extends Controller
 
         $request->validate($rules);
 
-        $officeId = $user->role === 'office' ? $user->office_id : $request->input('office_id');
+        // Derive office_id: prefer the user's assigned office, fall back to the
+        // citizen_request's office (handles admins and office users with no office_id set).
+        if ($user->role === 'office' && $user->office_id) {
+            $officeId = $user->office_id;
+        } elseif ($request->input('citizen_request_id')) {
+            $cr = CitizenRequest::find($request->input('citizen_request_id'));
+            $officeId = $cr?->office_id ?? $request->input('office_id');
+        } else {
+            $officeId = $request->input('office_id');
+        }
 
         $appointment = Appointment::create([
             'office_id'          => $officeId,
@@ -75,9 +84,22 @@ class AppointmentController extends Controller
             abort(403);
         }
 
-        $request->validate(['status' => ['required', 'in:pending,confirmed,cancelled,completed']]);
+        $request->validate([
+            'status'       => ['required', 'in:pending,confirmed,cancelled,completed'],
+            'scheduled_at' => ['nullable', 'date'],
+            'notes'        => ['nullable', 'string', 'max:1000'],
+        ]);
         $newStatus = $request->input('status');
-        $appointment->update(['status' => $newStatus]);
+
+        $updates = ['status' => $newStatus];
+        if ($request->filled('scheduled_at')) {
+            $updates['scheduled_at'] = $request->input('scheduled_at');
+        }
+        if ($request->filled('notes')) {
+            $updates['notes'] = $request->input('notes');
+        }
+
+        $appointment->update($updates);
 
         // Notify the citizen on every meaningful status change
         if (in_array($newStatus, ['confirmed', 'completed', 'cancelled'])) {
@@ -98,6 +120,44 @@ class AppointmentController extends Controller
         }
         $appointment->delete();
         return Redirect::back()->with('success', 'Appointment deleted.');
+    }
+
+    // Citizen: request an appointment for their service request
+    public function citizenRequest(CitizenRequest $citizenRequest, Request $request)
+    {
+        if ($citizenRequest->user_id !== Auth::id()) abort(403);
+
+        $request->validate([
+            'preferred_date' => ['required', 'date', 'after:now'],
+            'citizen_notes'  => ['nullable', 'string', 'max:500'],
+        ]);
+
+        Appointment::create([
+            'office_id'            => $citizenRequest->office_id,
+            'user_id'              => Auth::id(),
+            'citizen_request_id'   => $citizenRequest->id,
+            'title'                => 'Appointment Request',
+            'scheduled_at'         => $request->input('preferred_date'),
+            'duration_minutes'     => 30,
+            'status'               => 'pending',
+            'notes'                => $request->input('citizen_notes'),
+            'requested_by_citizen' => true,
+            'citizen_notes'        => $request->input('citizen_notes'),
+        ]);
+
+        // Notify office staff
+        try {
+            $officeStaff = \App\Models\User::where('office_id', $citizenRequest->office_id)
+                ->whereIn('role', ['office', 'admin'])->get();
+            foreach ($officeStaff as $staff) {
+                $staff->notify(new \App\Notifications\AppointmentScheduled(
+                    Appointment::where('citizen_request_id', $citizenRequest->id)
+                        ->latest()->first()->load('office')
+                ));
+            }
+        } catch (\Throwable $e) {}
+
+        return Redirect::back()->with('success', 'Appointment requested! The office will confirm a time shortly.');
     }
 
     // Citizen: list their appointments

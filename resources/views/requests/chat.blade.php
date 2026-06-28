@@ -163,6 +163,35 @@
                 </p>
             </div>
             @endif
+
+            {{-- Request Appointment --}}
+            <div class="mt-4 pt-3" style="border-top:1px solid var(--border)">
+                <div style="font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">
+                    {{ $isAr ? 'موعد' : 'Appointment' }}
+                </div>
+                @if(session('success'))
+                    <div style="background:rgba(4,120,87,0.15);border:1px solid rgba(4,120,87,0.35);border-radius:8px;padding:.6rem .875rem;font-size:.78rem;color:#6ee7b7;margin-bottom:.75rem;">
+                        <i class="bi bi-check-circle-fill me-1"></i> {{ session('success') }}
+                    </div>
+                @endif
+                <form method="POST" action="{{ route('citizen.appointments.request', $citizenRequest) }}">
+                    @csrf
+                    <div style="margin-bottom:.6rem;">
+                        <label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.3rem;">{{ $isAr ? 'التاريخ والوقت المفضل' : 'Preferred date & time' }}</label>
+                        <input type="datetime-local" name="preferred_date"
+                               class="form-control-custom" style="font-size:.82rem;color-scheme:dark;"
+                               min="{{ now()->addHours(2)->format('Y-m-d\TH:i') }}" required>
+                    </div>
+                    <div style="margin-bottom:.75rem;">
+                        <label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:.3rem;">{{ $isAr ? 'ملاحظات (اختياري)' : 'Notes (optional)' }}</label>
+                        <textarea name="citizen_notes" rows="2" class="form-control-custom" style="font-size:.82rem;resize:none;"
+                                  placeholder="{{ $isAr ? 'سبب الطلب...' : 'Reason for visit...' }}" maxlength="500"></textarea>
+                    </div>
+                    <button type="submit" class="btn-gold" style="width:100%;justify-content:center;font-size:.82rem;padding:.5rem;">
+                        <i class="bi bi-calendar-plus"></i> {{ $isAr ? 'طلب موعد' : 'Request Appointment' }}
+                    </button>
+                </form>
+            </div>
         </div>
 
         {{-- Office hours --}}

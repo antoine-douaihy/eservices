@@ -186,7 +186,7 @@ class CitizenRequestController extends Controller
             abort(403);
         }
 
-        $allowed = ['in_review', 'missing_documents', 'rejected'];
+        $allowed = ['in_review', 'missing_documents', 'rejected', 'approved'];
         $newStatus = $request->input('status');
 
         if (!in_array($newStatus, $allowed)) {
@@ -196,6 +196,27 @@ class CitizenRequestController extends Controller
         $note = $request->input('note');
         $citizenRequest->update(['status' => $newStatus]);
         $citizenRequest->logHistory($newStatus, $user->id, $note);
+
+        // When office staff approve, generate the certificate just like admin approval
+        if ($newStatus === 'approved') {
+            try {
+                $citizenRequest->update(['approved_at' => now()]);
+                $pdfGenerator = app(\App\Services\PdfGenerator::class);
+                $pdf      = $pdfGenerator->loadView('pdf.certificate', ['request' => $citizenRequest->fresh()->load('service','office','user')]);
+                $filename = 'certificate_' . $citizenRequest->id . '_' . time() . '.pdf';
+                \Illuminate\Support\Facades\Storage::disk('public')->put('certificates/' . $filename, $pdf->output());
+                $citizenRequest->update(['certificate_path' => 'certificates/' . $filename]);
+                if ($citizenRequest->serviceApplication) {
+                    $citizenRequest->serviceApplication->update([
+                        'status'           => 'completed',
+                        'approved_at'      => now(),
+                        'certificate_path' => 'certificates/' . $filename,
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                // PDF generation failure should not block approval
+            }
+        }
 
         try {
             $citizenRequest->user->notify(new RequestStatusChanged($citizenRequest->fresh(), $newStatus, $note));

@@ -317,13 +317,14 @@
                                     <i class="bi bi-calendar-plus"></i>
                                 </button>
 
-                                {{-- Admin-only approve --}}
-                                @if(Auth::user()->role === 'admin' && $isActionable && $req->payment_status === 'paid')
-                                    <form method="POST" action="{{ route('requests.approve', $req) }}">
+                                {{-- Approve (office staff + admin) --}}
+                                @if($isActionable && ($req->payment_status === 'paid' || $req->service?->price == 0))
+                                    <form method="POST" action="{{ route('office.requests.status', $req) }}">
                                         @csrf @method('PATCH')
+                                        <input type="hidden" name="status" value="approved">
                                         <button class="btn-emerald" style="padding:0.3rem 0.65rem;font-size:0.78rem;"
-                                                onclick="return confirm('Approve and generate certificate?')" title="Approve">
-                                            <i class="bi bi-check-lg"></i>
+                                                onclick="return confirm('Approve this request and generate certificate?')" title="Approve">
+                                            <i class="bi bi-check-lg"></i> Approve
                                         </button>
                                     </form>
                                 @endif

@@ -10,6 +10,7 @@ class Appointment extends Model
         'office_id', 'user_id', 'citizen_request_id',
         'title', 'scheduled_at', 'duration_minutes',
         'status', 'notes', 'reminder_sent',
+        'requested_by_citizen', 'citizen_notes',
     ];
 
     protected $casts = [

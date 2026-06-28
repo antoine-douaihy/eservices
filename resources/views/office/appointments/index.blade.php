@@ -122,10 +122,17 @@
                                 @endif
                             </td>
                             <td style="color:var(--text)">
-                                {{ $appt->title }}
-                                @if($appt->notes)
+                                <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+                                    {{ $appt->title }}
+                                    @if($appt->requested_by_citizen ?? false)
+                                        <span style="background:rgba(96,165,250,0.15);border:1px solid rgba(96,165,250,0.3);color:#93c5fd;font-size:.65rem;padding:.1rem .5rem;border-radius:20px;font-weight:700;">
+                                            Citizen Request
+                                        </span>
+                                    @endif
+                                </div>
+                                @if($appt->citizen_notes ?? $appt->notes)
                                     <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem">
-                                        {{ Str::limit($appt->notes, 60) }}
+                                        {{ Str::limit($appt->citizen_notes ?? $appt->notes, 60) }}
                                     </div>
                                 @endif
                             </td>
@@ -140,13 +147,21 @@
                             <td class="text-end">
                                 <div class="d-flex gap-2 justify-content-end flex-wrap">
                                     @if($appt->status === 'pending')
-                                        <form method="POST" action="{{ route('office.appointments.status', $appt) }}">
-                                            @csrf @method('PATCH')
-                                            <input type="hidden" name="status" value="confirmed">
-                                            <button type="submit" class="btn btn-emerald btn-sm">
-                                                <i class="bi bi-check-lg me-1"></i>Confirm
+                                        @if($appt->requested_by_citizen ?? false)
+                                            {{-- Citizen-requested: office picks/adjusts time then confirms --}}
+                                            <button type="button" class="btn btn-emerald btn-sm"
+                                                    onclick="openScheduleModal({{ $appt->id }}, '{{ $appt->scheduled_at->format('Y-m-d\TH:i') }}')">
+                                                <i class="bi bi-calendar-check me-1"></i>Schedule & Confirm
                                             </button>
-                                        </form>
+                                        @else
+                                            <form method="POST" action="{{ route('office.appointments.status', $appt) }}">
+                                                @csrf @method('PATCH')
+                                                <input type="hidden" name="status" value="confirmed">
+                                                <button type="submit" class="btn btn-emerald btn-sm">
+                                                    <i class="bi bi-check-lg me-1"></i>Confirm
+                                                </button>
+                                            </form>
+                                        @endif
                                         <form method="POST" action="{{ route('office.appointments.status', $appt) }}">
                                             @csrf @method('PATCH')
                                             <input type="hidden" name="status" value="cancelled">
@@ -265,5 +280,54 @@
         </div>
     </div>
 </div>
+
+{{-- Schedule & Confirm Modal (for citizen-requested appointments) --}}
+<div class="modal fade" id="schedule-confirm-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:#1a2942;border:1px solid var(--border);color:var(--text)">
+            <div class="modal-header" style="border-color:var(--border)">
+                <h6 class="modal-title fw-bold" style="color:var(--gold)">
+                    <i class="bi bi-calendar-check me-1"></i> Schedule & Confirm Appointment
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="schedule-confirm-form" method="POST" action="">
+                @csrf @method('PATCH')
+                <input type="hidden" name="status" value="confirmed">
+                <div class="modal-body">
+                    <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;">
+                        Review the citizen's preferred time and adjust if needed before confirming.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Confirmed Date & Time <span style="color:#f87171;">*</span></label>
+                        <input type="datetime-local" name="scheduled_at" id="schedule-dt"
+                               class="form-control-custom" style="color-scheme:dark;" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Notes to Citizen (optional)</label>
+                        <textarea name="notes" rows="2" class="form-control-custom"
+                                  placeholder="e.g. Please bring your original ID documents"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-color:var(--border)">
+                    <button type="button" class="btn btn-ghost btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-emerald btn-sm">
+                        <i class="bi bi-check-lg me-1"></i> Confirm Appointment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+function openScheduleModal(apptId, preferredDt) {
+    document.getElementById('schedule-confirm-form').action = '/office/appointments/' + apptId + '/status';
+    document.getElementById('schedule-dt').value = preferredDt;
+    new bootstrap.Modal(document.getElementById('schedule-confirm-modal')).show();
+}
+</script>
+@endpush
 
 @endsection
