@@ -16,9 +16,9 @@
         </p>
 
         <div style="text-align:center;margin-bottom:1.5rem;">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ urlencode($qrCodeUrl) }}&size=200x200"
-                 alt="Scan with Authenticator App"
-                 style="border-radius:12px;border:1px solid var(--border);padding:8px;background:rgba(255,255,255,0.05);max-width:200px;">
+            <div style="display:inline-block;border-radius:12px;border:1px solid var(--border);padding:8px;background:#ffffff;">
+                {!! $qrSvg !!}
+            </div>
         </div>
 
         <div style="text-align:center;margin-bottom:1.5rem;font-size:0.82rem;color:var(--muted);">

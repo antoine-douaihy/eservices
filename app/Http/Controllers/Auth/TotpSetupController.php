@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PragmaRX\Google2FA\Google2FA;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TotpSetupController extends Controller
 {
@@ -29,7 +30,9 @@ class TotpSetupController extends Controller
             $secret
         );
 
-        return view('auth.totp-setup', compact('qrCodeUrl', 'secret'));
+        $qrSvg = QrCode::format('svg')->size(200)->errorCorrection('M')->generate($qrCodeUrl);
+
+        return view('auth.totp-setup', compact('qrCodeUrl', 'secret', 'qrSvg'));
     }
 
     // Confirm the user scanned it correctly
@@ -49,6 +52,10 @@ class TotpSetupController extends Controller
         ]);
 
         session()->forget('2fa:setup_secret');
+
+        return redirect()->route('home')->with('status', 'Google Authenticator has been enabled for your account!');
+    }
+}rget('2fa:setup_secret');
 
         return redirect('/dashboard')->with('status', 'Google Authenticator has been enabled for your account!');
     }
