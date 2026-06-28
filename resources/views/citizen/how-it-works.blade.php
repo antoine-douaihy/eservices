@@ -179,19 +179,26 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Step accordion
     document.querySelectorAll('#wfTree .wf-step').forEach(function (step) {
         step.addEventListener('click', function () {
             step.classList.toggle('active');
         });
     });
-});
 
-const wfSelect = document.getElementById('wfServiceSelect');
-if (wfSelect) {
-    wfSelect.addEventListener('change', function () {
-        document.querySelectorAll('[id^="svc-"]').forEach(el => el.style.display = 'none');
-        if (this.value) {
-            const el = document.getElementById(this.value);
-            if (el) el.style.display = 'block';
-        }
+    // Service requirements lookup
+    var wfSelect = document.getElementById('wfServiceSelect');
+    if (wfSelect) {
+        wfSelect.addEventListener('change', function () {
+            document.querySelectorAll('[id^="svc-"]').forEach(function (el) {
+                el.style.display = 'none';
+            });
+            if (this.value) {
+                var el = document.getElementById(this.value);
+                if (el) el.style.display = 'block';
+            }
+        });
     }
+});
+</script>
+@endpush
