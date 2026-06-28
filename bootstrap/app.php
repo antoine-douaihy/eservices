@@ -26,5 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Redirect back to login with a message instead of showing the raw 419 page.
+        // This happens when a session cookie is stale (e.g. after a redeploy) — the
+        // browser sends the old cookie, Laravel can't find the session, tokens diverge.
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            return redirect('/login')
+                ->withInput($request->except('password'))
+                ->withErrors(['email' => 'Your session expired. Please try again.']);
+        });
     })->create();
