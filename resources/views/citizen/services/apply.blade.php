@@ -188,7 +188,7 @@
                 </div>
 
                 {{-- Municipality dropdown --}}
-                <select id="manual_office_select" required
+                <select id="manual_office_select"
                         onchange="document.getElementById('selected_office_id').value = this.value"
                         style="background:#ffffff;border:1.5px solid var(--border);color:var(--text);border-radius:9px;padding:0.85rem 1.1rem;font-size:1.05rem;width:100%;outline:none;min-height:48px;margin-bottom:0.75rem;">
                     @foreach($officesWithService as $o)
@@ -425,7 +425,8 @@ function populateReview() {
     document.getElementById('review-email').textContent   = document.querySelector('[name=email]').value    || '—';
     document.getElementById('review-address').textContent = document.querySelector('[name=address]').value  || '—';
     const sel = document.getElementById('manual_office_select');
-    document.getElementById('review-office').textContent  = sel ? sel.options[sel.selectedIndex]?.text.split('—')[0].trim() : '—';
+    const selOpt = sel ? sel.options[sel.selectedIndex] : null;
+    document.getElementById('review-office').textContent  = selOpt?.text ? selOpt.text.split('—')[0].trim() : '—';
 
     // Uploaded docs
     const docContainer = document.getElementById('review-docs');
@@ -520,8 +521,12 @@ document.head.appendChild(style);
 
 // On validation error reload: jump to the step that has errors
 const __errorKeys = (document.getElementById('applyForm').dataset.errorKeys || '').split(',').filter(Boolean);
-if (__errorKeys.some(k => k.startsWith('doc_'))) {
-    goToStep(2);
+if (__errorKeys.length > 0) {
+    if (__errorKeys.some(k => k.startsWith('doc_'))) {
+        goToStep(2);
+    } else {
+        goToStep(1);
+    }
 }
 
 document.getElementById('applyForm').addEventListener('submit', function() {
