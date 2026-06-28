@@ -531,3 +531,28 @@ Route::get('/debug-office-dashboard-8k3p', function () {
         ]);
     }
 });
+
+// Temporary 2FA debug route — remove after fixing
+Route::get('/debug-2fa-x9k2', function () {
+    $userId = \Illuminate\Support\Facades\Auth::id();
+    if (!$userId) return response()->json(['error' => 'Not logged in']);
+
+    $row = \Illuminate\Support\Facades\DB::table('users')
+        ->where('id', $userId)
+        ->select('id', 'email', 'role', 'two_factor_enabled', 'two_factor_secret')
+        ->first();
+
+    // Also attempt a test write right now
+    \Illuminate\Support\Facades\DB::table('users')
+        ->where('id', $userId)
+        ->update(['updated_at' => now()]);
+
+    return response()->json([
+        'auth_id'             => $userId,
+        'email'               => $row->email,
+        'role'                => $row->role,
+        'two_factor_enabled'  => $row->two_factor_enabled,
+        'has_secret'          => !empty($row->two_factor_secret),
+        'secret_preview'      => $row->two_factor_secret ? substr($row->two_factor_secret, 0, 6).'...' : null,
+    ]);
+})->middleware('auth');
