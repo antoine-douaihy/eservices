@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class CryptoPaymentController extends Controller
 {
@@ -26,7 +27,16 @@ class CryptoPaymentController extends Controller
             ->latest()
             ->first();
 
-        return View::make('crypto.payment', compact('citizenRequest', 'prices', 'transaction'));
+        $qrSvg = null;
+        if ($transaction) {
+            try {
+                $qrSvg = QrCode::format('svg')->size(180)->generate($transaction->wallet_address);
+            } catch (\Exception $e) {
+                // leave null; view falls back to external API
+            }
+        }
+
+        return View::make('crypto.payment', compact('citizenRequest', 'prices', 'transaction', 'qrSvg'));
     }
 
     public function initiate(Request $request, CitizenRequest $citizenRequest)

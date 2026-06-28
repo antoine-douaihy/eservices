@@ -107,9 +107,15 @@
 
         <div class="row g-4 align-items-center mb-4">
             <div class="col-md-5 text-center">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ urlencode($transaction->wallet_address) }}&bgcolor=ffffff&color=1e3a5f&margin=6"
-                     alt="QR Code"
-                     style="border-radius:12px;border:1px solid var(--border);padding:6px;background:#f8fafc;max-width:180px;">
+                @if($qrSvg)
+                    <div style="display:inline-block;border-radius:12px;border:1px solid var(--border);padding:6px;background:#f8fafc;max-width:192px;">
+                        {!! $qrSvg !!}
+                    </div>
+                @else
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ urlencode($transaction->wallet_address) }}&bgcolor=ffffff&color=1e3a5f&margin=6"
+                         alt="QR Code"
+                         style="border-radius:12px;border:1px solid var(--border);padding:6px;background:#f8fafc;max-width:180px;">
+                @endif
                 <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">{{ $isAr ? 'اسحب للدفع' : 'Scan to pay' }}</div>
             </div>
             <div class="col-md-7">
