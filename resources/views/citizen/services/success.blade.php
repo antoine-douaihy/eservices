@@ -90,11 +90,11 @@
 
     {{-- ACTIONS --}}
     <div class="d-flex justify-content-center gap-3 flex-wrap">
-        <a href="{{ route('citizen.applications.index') }}"
+        <a href="{{ route('citizen.my-requests') }}"
            style="background:var(--gold);border:none;color:#fff;font-weight:700;font-size:0.875rem;padding:0.75rem 1.75rem;border-radius:9px;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;transition:background 0.2s;"
            onmouseover="this.style.background='var(--gold-light)'"
            onmouseout="this.style.background='var(--gold)'">
-            <i class="bi bi-list-check"></i> {{ __('pages.my_applications') }}
+            <i class="bi bi-folder2-open"></i> {{ __('app.nav_my_requests') }}
         </a>
         <a href="{{ route('citizen.services.browse') }}"
            style="background:#ffffff;border:1px solid var(--border);color:var(--text);font-size:0.875rem;padding:0.75rem 1.75rem;border-radius:9px;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;transition:all 0.2s;"

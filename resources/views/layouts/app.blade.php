@@ -484,12 +484,8 @@
                class="sidebar-link {{ request()->routeIs('citizen.services.browse') ? 'active' : '' }}">
                 <i class="bi bi-grid-fill"></i> {{ __('app.nav_browse_services') }}
             </a>
-            <a href="{{ route('citizen.applications.index') }}"
-               class="sidebar-link {{ request()->routeIs('citizen.applications.*') ? 'active' : '' }}">
-                <i class="bi bi-list-check"></i> {{ __('app.nav_my_applications') }}
-            </a>
             <a href="{{ route('citizen.my-requests') }}"
-               class="sidebar-link {{ request()->routeIs('citizen.my-requests') ? 'active' : '' }}">
+               class="sidebar-link {{ request()->routeIs('citizen.my-requests') || request()->routeIs('citizen.applications.*') ? 'active' : '' }}">
                 <i class="bi bi-folder2-open"></i> {{ __('app.nav_my_requests') }}
             </a>
             <a href="{{ route('citizen.appointments.index') }}"

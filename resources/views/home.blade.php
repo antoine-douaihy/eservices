@@ -90,10 +90,10 @@
     @endif
 </div>
 
-{{-- My Applications Table --}}
+{{-- My Requests Table --}}
 <div class="app-card" style="padding:0;overflow:hidden;">
     <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);">
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--navy);">{{ __('pages.my_applications') }}</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--navy);">{{ __('app.nav_my_requests') }}</div>
     </div>
     <div style="overflow-x:auto;">
         <table class="app-table">

@@ -143,7 +143,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/services/{service}/apply',           [ServiceApplicationController::class, 'apply'])->name('citizen.services.apply');
     Route::post('/services/{service}/apply',          [ServiceApplicationController::class, 'store'])->name('citizen.services.store');
     Route::get('/applications/{application}/success', [ServiceApplicationController::class, 'success'])->name('citizen.applications.success');
-    Route::get('/my-applications',                    [ServiceApplicationController::class, 'myApplications'])->name('citizen.applications.index');
+    Route::get('/my-applications',                    fn() => redirect()->route('citizen.my-requests'))->name('citizen.applications.index');
     Route::get('/requests/{citizenRequest}/payment',  [ServiceApplicationController::class, 'selectPayment'])->name('citizen.payment.select');
 
     // Chat
